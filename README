@@ -8,6 +8,8 @@ Rakismet is easy Akismet integration with your Rails app.
 Setup
 =====
 
+Install with script/plugin install git://github.com/jfrench/rakismet
+
 To get up and running with Rakismet, you'll need an API key from the folks at
 WordPress. Head on over to http://wordpress.com/api-keys/ and sign up for a
 new username.
