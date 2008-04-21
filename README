@@ -1,0 +1,83 @@
+Rakismet
+========
+
+Akismet [http://akismet.com/] is a collaborative spam filtering service.
+Rakismet is easy Akismet integration with your Rails app.
+
+
+Setup
+=====
+
+To get up and running with Rakismet, you'll need an API key from the folks at
+WordPress. Head on over to http://wordpress.com/api-keys/ and sign up for a
+new username.
+
+Rakismet installation should have created a file called rakismet.rb in
+config/initializers. Add your WordPress key and the front page or home URL of
+your app. Rakismet::URL must be a fully qualified URI including the http://.
+
+If that file is missing, create it and add the following:
+
+  Rakismet::KEY = 'your key from WordPress'
+  Rakismet::URL = 'http://base url for your application/'
+
+Now introduce Rakismet to your application. Let's assume you have a Comment
+model and a CommentsController:
+
+	class Comment < ActiveRecord::Base
+	  has_rakismet
+	end
+
+	class CommentController < ActionController::Base
+	  has_rakismet
+	end
+
+Rakismet sends the following information to the spam-hungry robots at Akismet,
+which means you should be capturing and storing these in your Comment model:
+
+  author 				: name submitted with the comment
+	author_url 		: URL submitted with the comment
+	author_email 	: email submitted with the comment
+	comment_type	: 'comment', 'trackback', 'pingback', or whatever you fancy
+	content				: the content submitted
+	
+There are a few optional fields. It's a good idea to store these, but you
+don't have to. If you omit them, they will be found in the request and sent
+with the spam? but not spam! or ham! methods.
+
+  user_ip				: IP address used to submit this comment
+	user_agent		: user agent string
+	referrer			: http referer
+
+If your attributes don't match these names, pass has_rakismet a hash mapping
+the default attributes to your own:
+
+  class Comment < ActiveRecord::Base
+		has_rakismet :author => :commenter_name,
+								 :author_email => :commenter_email
+	end
+
+Usage
+=====
+
+Rakismet provides three methods for interacting with Akismet:
+
+  spam?
+
+From within a CommentsController action, simply call @comment.spam? to get a
+true/false response. True means it's spam, false means it's not. Well,
+usually; it's possible something went wrong and Akismet returned an error
+message. @comment.spam? will return false if this happens. You can check
+@comment.akismet_response to be certain; anything other than 'true' or 'false'
+means you got an error. That said, as long as you're collecting the data
+listed above it's probably sufficient to check spam? alone.
+
+  ham! and spam!
+
+Akismet works best with your feedback. If you spot a comment that was
+erroneously marked as spam, @comment.ham! will resubmit to Akismet, marked as
+a false positive. Likewise if they missed a spammy comment, @comment.spam!
+will resubmit marked as spam.
+
+
+Copyright (c) 2008 Josh French, released under the MIT license
