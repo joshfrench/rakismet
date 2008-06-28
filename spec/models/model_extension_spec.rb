@@ -75,7 +75,27 @@ describe AkismetModel do
       end
     end
   end
-  
+
+  @proc = proc { author.reverse }
+  block_params = { :author => @proc }
+
+  describe block = AkismetModel.subclass('Block') { has_rakismet(block_params) } do
+
+    before do
+      @block = block.new
+      comment_attrs.each_pair { |k,v| @block.stub!(k).and_return(v) }
+    end
+
+    it "should accept a block" do
+      block.akismet_attrs[:author].should eql(@proc)
+    end
+
+    it "should eval block with self = instance" do
+      data = @block.send(:akismet_data)
+      data[:comment_author].should eql(comment_attrs[:author].reverse)
+    end
+  end
+
   describe ".spam?" do
     
     before do

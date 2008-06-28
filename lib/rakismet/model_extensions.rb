@@ -48,8 +48,8 @@ module Rakismet
 
         def akismet_data
           self.class.akismet_attrs.keys.inject({}) do |data,attr|
-            data[attr] = send(self.class.akismet_attrs[attr])
-            data
+            v = self.class.akismet_attrs[attr].is_a?(Proc) ? self.class.akismet_attrs[attr].bind(self).call : send(self.class.akismet_attrs[attr])
+            data.merge attr => v
           end
         end
     end
