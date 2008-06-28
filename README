@@ -59,6 +59,17 @@ the default attributes to your own:
                  :author_email => :commenter_email
   end
 
+If you need more complicated behavior, you can map attributes to procs.
+Inside these blocks, +self+ will be evaluated as the current model
+instance. This means you can do the following:
+
+  class Comment < ActiveRecord::Base
+    belongs_to :author
+
+    has_rakismet :author => proc { author.name },
+                 :author_email => proc { author.email }
+  end
+
 Usage
 =====
 
