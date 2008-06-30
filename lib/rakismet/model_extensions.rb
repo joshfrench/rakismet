@@ -29,7 +29,7 @@ module Rakismet
         raise Rakismet::NoBinding, "Couldn't find action.binding" if Rakismet::Base.rakismet_binding.nil?
         data = akismet_data
         { :referrer => 'request.referer', :user_ip => 'request.remote_ip',
-          :user_agent => 'request.user_agent', }.each_pair do |k,v|
+          :user_agent => 'request.user_agent' }.each_pair do |k,v|
           data[k] = eval(v, Rakismet::Base.rakismet_binding)
         end
         self.akismet_response = Rakismet::Base.akismet_call('comment-check', data)
@@ -48,7 +48,7 @@ module Rakismet
 
         def akismet_data
           self.class.akismet_attrs.keys.inject({}) do |data,attr|
-            v = self.class.akismet_attrs[attr].is_a?(Proc) ? self.class.akismet_attrs[attr].bind(self).call : send(self.class.akismet_attrs[attr])
+            v = self.class.akismet_attrs[attr].is_a?(Proc) ? instance_eval(&self.class.akismet_attrs[attr]) : send(self.class.akismet_attrs[attr])
             data.merge attr => v
           end
         end
