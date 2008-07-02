@@ -35,40 +35,49 @@ model and a CommentsController:
   end
 
 Rakismet sends the following information to the spam-hungry robots at Akismet,
-which means you should be capturing and storing these in your Comment model:
+which means these attributes should be stored in your Comment model or
+accessible through that class's associations.
 
   author        : name submitted with the comment
   author_url    : URL submitted with the comment
   author_email  : email submitted with the comment
   comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
   content       : the content submitted
-	
-There are a few optional fields. It's a good idea to store these, but you
-don't have to. If you omit them, they will be found in the request and sent
-with the spam? but not spam! or ham! methods.
-
+  permalink     : the permanent URL for the entry the comment belongs to
+  ##  These last 3 fields don't need to be defined  ##
+  ##  if you're not storing them in the database.   ##
   user_ip       : IP address used to submit this comment
   user_agent    : user agent string
   referrer      : http referer
 
-If your attributes don't match these names, pass has_rakismet a hash mapping
-the default attributes to your own:
+user_ip, user_agent, and referer are optional; you don't have to store them,
+but it's a good idea. If you omit them from the Rakismet definition (see
+below), the +spam?+ method will look around in your request environment and
+find them there. This means that Rakismet is meant to be used in a synchronous
+fashion -- validating comments as they are submitted by the user, not placed
+in a queue for later spam-checking.
 
-  class Comment < ActiveRecord::Base
-    has_rakismet :author => :commenter_name,
-                 :author_email => :commenter_email
-  end
+Customizing Attributes
+======================
 
-If you need more complicated behavior, you can map attributes to procs.
-Inside these blocks, +self+ will be evaluated as the current model
-instance. This means you can do the following:
+If your attributes don't match those listed above, or if some of them live on
+other objects, you pass has_rakismet a hash mapping the default attributes to
+your own. You can change the names, if your comment attributes don't match the
+Rakismet defaults:
 
-  class Comment < ActiveRecord::Base
-    belongs_to :author
+  has_rakismet :author => :commenter_name,
+               :author_email => :commenter_email
 
-    has_rakismet :author => proc { author.name },
-                 :author_email => proc { author.email }
-  end
+You can also pass in a proc, to access associations:
+
+  belongs_to :author
+  has_rakismet :author => proc { author.name },
+               :author_email => proc { author.email }
+
+For any attribute you don't explicitly define, Rakismet will try to find an
+attribute or method matching the default name. As mentioned above, you can
+either map user_ip, user_agent, and referer here or omit them and Rakismet
+will look for them in the request environment when you call +spam?+.
 
 Usage
 =====
