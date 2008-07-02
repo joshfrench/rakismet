@@ -106,6 +106,20 @@ describe AkismetModel do
     end
   end
 
+  string_params = { :comment_type => 'pingback' }
+
+  describe string = AkismetModel.subclass('StringParams') { has_rakismet(string_params) } do
+
+    before do
+      @string = string.new
+      comment_attrs.each_pair { |k,v| @string.stub!(k).and_return(v) }
+    end
+
+    it "should map string attributes" do
+      @string.send(:akismet_data)[:comment_type].should eql('pingback')
+    end
+  end
+
   describe ".spam?" do
     
     before do
