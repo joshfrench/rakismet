@@ -23,7 +23,7 @@ describe AkismetModel do
   mapped_params = { :comment_type => :type2, :author => :author2, :content => :content2,
                     :author_email => :author_email2, :author_url => :author_url2 }
     
-  describe override = AkismetModel.subclass('Override') { has_rakismet(mapped_params) } do
+  describe override = AkismetModel.subclass('Override') { has_rakismet(mapped_params.dup) } do
     it "should override default mappings" do
       [:comment_type, :author, :author_url, :author_email, :content].each do |field|
         fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
@@ -43,7 +43,7 @@ describe AkismetModel do
   extended_params = { :user_ip => :stored_ip, :user_agent => :stored_agent,
                       :referrer => :stored_referrer }
                       
-  describe extended = AkismetModel.subclass('Extended') { has_rakismet(extended_params) } do
+  describe extended = AkismetModel.subclass('Extended') { has_rakismet(extended_params.dup) } do
     
     before do
       @extended = extended.new
@@ -93,6 +93,16 @@ describe AkismetModel do
     it "should eval block with self = instance" do
       data = @block.send(:akismet_data)
       data[:comment_author].should eql(comment_attrs[:author].reverse)
+    end
+  end
+
+  extra_params = { :extra => :extra, :another => lambda { } }
+
+  describe extra = AkismetModel.subclass('ExtraParams') { has_rakismet(extra_params.dup) } do
+    it "should map additional attributes" do
+      [:extra, :another].each do |field|
+        extra.akismet_attrs[field].should eql(extra_params[field])
+      end
     end
   end
 

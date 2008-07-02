@@ -16,10 +16,13 @@ module Rakismet
         [:comment_type, :author, :author_url, :author_email, :content].each do |field|
            # clunky, but throwing around +type+ will break your heart
            fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
-           self.akismet_attrs[fieldname] = args[field] || field
+           self.akismet_attrs[fieldname] = args.delete(field) || field
         end
         [:user_ip, :user_agent, :referrer].each do |field|
-          self.akismet_attrs[field] = (args[field] || field) if args.has_key?(field) or self.public_instance_methods.include?(field.to_s)
+          self.akismet_attrs[field] = (args.delete(field) || field) if args.has_key?(field) or self.public_instance_methods.include?(field.to_s)
+        end
+        args.each_pair do |f,v|
+          self.akismet_attrs[f] = v
         end
       end
     end
