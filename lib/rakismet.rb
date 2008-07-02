@@ -44,7 +44,7 @@ module Rakismet
   NoBinding = Class.new(NameError)
   
   HEADERS = {
-    'User-Agent' => "Rails/#{Rails::VERSION::STRING} | Rakismet/2.0",
+    'User-Agent' => "Rails/#{Rails::VERSION::STRING} | Rakismet/0.2.1",
     'Content-Type' => 'application/x-www-form-urlencoded'
   }
 end
