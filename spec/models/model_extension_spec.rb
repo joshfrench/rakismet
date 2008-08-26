@@ -154,7 +154,11 @@ describe AkismetModel do
       @model.spam?
       @model.akismet_response.should eql('response')
     end
-    
+
+    it "should not throw an error if request vars are missing" do
+      Rakismet::Base.rakismet_binding = nil_binding
+      lambda { @model.spam? }.should_not raise_error(NoMethodError)
+    end
   end
   
   describe ".spam!" do
@@ -189,6 +193,13 @@ describe AkismetModel do
       request = OpenStruct.new(:remote_ip => '127.0.0.1',
                                :user_agent => 'RSpec',
                                :referer => 'http://test.host/referrer')
+      binding
+    end
+
+    def nil_binding
+      request = OpenStruct.new(:remote_ip => nil,
+                               :user_agent => nil,
+                               :referer => nil)
       binding
     end
 
