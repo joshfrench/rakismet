@@ -52,6 +52,12 @@ describe Rakismet::Base do
       Net::HTTP.stub!(:start).and_return([nil, 'akismet response'])
       Rakismet::Base.send(:akismet_call, 'bogus-function').should eql('akismet response')
     end
+
+    it "should build query string when params are nil" do
+      lambda {
+        Rakismet::Base.send(:akismet_call, 'bogus-function', { :nil_param => nil })
+      }.should_not raise_error(NoMethodError)
+    end
   end
   
 end

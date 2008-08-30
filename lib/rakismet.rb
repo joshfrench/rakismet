@@ -25,7 +25,7 @@ module Rakismet
         args.merge!(:blog => Rakismet::URL)
         akismet = URI.parse("http://#{Rakismet::KEY}.rest.akismet.com/1.1/#{function}")
         _, response = Net::HTTP.start(akismet.host) do |http|
-          data = args.map { |k,v| "#{k}=#{CGI.escape(v)}" }.join('&')
+          data = args.map { |k,v| "#{k}=#{CGI.escape(v.to_s)}" }.join('&')
           http.post(akismet.path, data, Rakismet::HEADERS)
         end
         response
