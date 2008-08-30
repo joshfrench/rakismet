@@ -7,13 +7,18 @@ module Rakismet
       end
     end
     
+    def rakismet(&block)
+      Rakismet::Base.rakismet_binding = binding
+      yield
+      Rakismet::Base.rakismet_binding = nil
+    end
+    private :rakismet
+
     module ClassMethods
-      def has_rakismet
-        self.around_filter do |controller,action|
-          Rakismet::Base.rakismet_binding = action.send(:binding)
-          action.call
-          Rakismet::Base.rakismet_binding = nil
-        end
+      def has_rakismet(opts={})
+        skip_filter :rakismet # in case we're inheriting from another Rakismeted controller
+        opts.assert_valid_keys(:only, :except)
+        self.around_filter :rakismet, opts
       end
     end
     
