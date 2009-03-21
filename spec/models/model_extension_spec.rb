@@ -6,6 +6,12 @@ class AkismetModel
   has_rakismet
 end
 
+class StoredParams
+  include Rakismet::ModelExtensions
+  attr_accessor :user_ip, :user_agent, :referrer
+  has_rakismet
+end
+
 describe AkismetModel do
   
   before do
@@ -134,11 +140,6 @@ describe AkismetModel do
       @model.spam?
     end
     
-    it "should raise error if binding unavailable" do
-      Rakismet::Base.rakismet_binding = nil
-      lambda { @model.spam? }.should raise_error(Rakismet::NoBinding)
-    end
-    
     it "should be true if comment is spam" do
       Rakismet::Base.stub!(:akismet_call).and_return('true')
       @model.should be_spam
@@ -161,6 +162,26 @@ describe AkismetModel do
     end
   end
   
+  describe StoredParams do
+      before do
+        Rakismet::Base.rakismet_binding = nil
+        @model = StoredParams.new
+        comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
+      end
+
+    it "should use local values if Rakismet binding is not present" do
+      @model.user_ip = '127.0.0.1'
+      @model.user_agent = 'RSpec'
+      @model.referrer = 'http://test.host/referrer'
+
+      Rakismet::Base.should_receive(:akismet_call).
+                with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
+                                                          :user_agent => 'RSpec',
+                                                          :referrer => 'http://test.host/referrer'))
+      @model.spam?
+    end
+  end
+
   describe ".spam!" do
     it "should call Base.akismet_call with submit-spam" do
       Rakismet::Base.should_receive(:akismet_call).with('submit-spam', akismet_attrs)
