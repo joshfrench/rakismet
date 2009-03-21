@@ -48,18 +48,19 @@ accessible through that class's associations.
   comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
   content       : the content submitted
   permalink     : the permanent URL for the entry the comment belongs to
-  ##  These last 3 fields don't need to be defined  ##
-  ##  if you're not storing them in the database.   ##
   user_ip       : IP address used to submit this comment
   user_agent    : user agent string
   referrer      : http referer
 
-user_ip, user_agent, and referer are optional; you don't have to store them,
-but it's a good idea. If you omit them from the Rakismet definition (see
-"Customizing Attributes" below), the +spam?+ method will look around in your
-request environment and find them there. This means that Rakismet is meant to
-be used in a synchronous fashion -- validating comments as they are submitted
-by the user, not placed in a queue for later spam-checking.
+user_ip, user_agent, and referrer are optional; you don't have to store them,
+but it's a good idea. If you omit them from your model (see "Customizing
+Attributes"), the +spam?+ method will attempt to extract these values from the
+current request object, if there is one. This means Rakismet can operate
+asynchronously by storing the request attributes and validating the comment at
+a later time. Or it can operate synchronously by plucking the request
+attributes from the environment at the time the comment is initially submitted
+and validating on the spot. The latter could work well with a before_create
+callback.
 
 
 Basic Usage
@@ -107,10 +108,10 @@ Or you can pass in a proc, to access associations:
   end
 
 For any attribute you don't specify, Rakismet will try to find an attribute or 
-method matching the default name. As mentioned above, you can explicitly map
-user_ip, user_agent, and referer here or omit them. If you leave them out,
-Rakismet will look for them in the request environment when you call +spam?+.
-
+method matching the default name. As mentioned above, if user_ip, user_agent,
+and referrer are not present on your model, Rakismet will attempt to find them
+in the request environment when +spam?+ is called from within a Rakismet-aware
+controller action.
 
 Controller Behavior
 ===================
