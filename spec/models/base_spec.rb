@@ -39,7 +39,7 @@ describe Rakismet::Base do
     end
     
     it "should build url with API key" do
-      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.rest.akismet.com")
+      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.rest.akismet.com").and_yield(stub_everything(:http))
       Rakismet::Base.send(:akismet_call, 'bogus-function')
     end
     
