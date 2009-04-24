@@ -8,7 +8,7 @@ module Rakismet
     class << self
       def validate_key
         validate_constants
-        akismet = URI.parse('http://rest.akismet.com/1.1/verify-key')
+        akismet = URI.parse(verify_url)
         _, valid = Net::HTTP.start(akismet.host) do |http|
           data = "key=#{Rakismet::KEY}&blog=#{Rakismet::URL}"
           http.post(akismet.path, data, Rakismet::HEADERS)
@@ -23,7 +23,7 @@ module Rakismet
       def akismet_call(function, args={})
         validate_constants
         args.merge!(:blog => Rakismet::URL)
-        akismet = URI.parse("http://#{Rakismet::KEY}.rest.akismet.com/1.1/#{function}")
+        akismet = URI.parse(call_url(function))
         _, response = Net::HTTP.start(akismet.host) do |http|
           data = args.map { |k,v| "#{k}=#{CGI.escape(v.to_s)}" }.join('&')
           http.post(akismet.path, data, Rakismet::HEADERS)
@@ -33,9 +33,18 @@ module Rakismet
       
       protected
         
+        def verify_url
+          "http://#{Rakismet::HOST}/1.1/verify-key"
+        end
+
+        def call_url(function)
+          "http://#{Rakismet::KEY}.#{Rakismet::HOST}/1.1/#{function}"
+        end
+
         def validate_constants
-          raise Undefined, "Rakismet::KEY is not defined" if Rakismet::KEY.blank?
-          raise Undefined, "Rakismet::URL is not defined" if Rakismet::URL.blank?
+          raise Undefined, "Rakismet::KEY is not defined"  if Rakismet::KEY.blank?
+          raise Undefined, "Rakismet::URL is not defined"  if Rakismet::URL.blank?
+          raise Undefined, "Rakismet::HOST is not defined" if Rakismet::HOST.blank?
         end
     end
   end

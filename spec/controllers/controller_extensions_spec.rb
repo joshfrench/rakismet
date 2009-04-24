@@ -1,9 +1,13 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
+ActionController::Routing::Routes.draw do |map|
+  map.connect ':controller/:action/:id'
+end
+
 class StubController < ActionController::Base
   has_rakismet
-  def one ; end
-  def two ; end
+  def one ; render :nothing => true; end
+  def two ; render :nothing => true; end
 end
 
 describe StubController do

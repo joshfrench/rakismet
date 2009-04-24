@@ -16,6 +16,11 @@ describe Rakismet::Base do
       Rakismet::URL = ""
       lambda { Rakismet::Base.send(:validate_constants) }.should raise_error(Rakismet::Undefined)
     end
+
+    it "should raise an error if host is not found" do
+      Rakismet::HOST = ""
+      lambda { Rakismet::Base.send(:validate_constants) }.should raise_error(Rakismet::Undefined)
+    end
   end
   
   describe ".validate_key" do
@@ -30,6 +35,13 @@ describe Rakismet::Base do
       Rakismet::Base.validate_key
       Rakismet::Base.valid_key?.should be_false
     end
+
+    it "should build url with host" do
+      host = "api.antispam.typepad.com"
+      Rakismet::HOST = host
+      Net::HTTP.should_receive(:start).with(host).and_yield(stub_everything(:http))
+      Rakismet::Base.validate_key
+    end
   end
   
   describe ".akismet_call" do
@@ -38,8 +50,10 @@ describe Rakismet::Base do
       Net::HTTP.stub!(:start).and_yield(@http)
     end
     
-    it "should build url with API key" do
-      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.rest.akismet.com").and_yield(stub_everything(:http))
+    it "should build url with API key for the correct host" do
+      host = "api.antispam.typepad.com"
+      Rakismet::HOST = host
+      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.#{host}").and_yield(stub_everything(:http))
       Rakismet::Base.send(:akismet_call, 'bogus-function')
     end
     
