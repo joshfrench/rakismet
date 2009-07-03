@@ -4,8 +4,8 @@ require 'uri'
 module Rakismet
   module Version
     Major = '0'
-    Minor = '2'
-    Tiny  = '2'
+    Minor = '3'
+    Tiny  = '0'
   end
 
   def self.version
