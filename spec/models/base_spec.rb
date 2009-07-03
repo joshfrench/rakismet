@@ -39,7 +39,7 @@ describe Rakismet::Base do
     it "should build url with host" do
       host = "api.antispam.typepad.com"
       Rakismet::HOST = host
-      Net::HTTP.should_receive(:start).with(host).and_yield(stub_everything(:http))
+      Net::HTTP.should_receive(:start).with(host).and_yield(mock(:http).as_null_object)
       Rakismet::Base.validate_key
     end
   end
@@ -53,7 +53,7 @@ describe Rakismet::Base do
     it "should build url with API key for the correct host" do
       host = "api.antispam.typepad.com"
       Rakismet::HOST = host
-      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.#{host}").and_yield(stub_everything(:http))
+      Net::HTTP.should_receive(:start).with("#{Rakismet::KEY}.#{host}").and_yield(mock(:http).as_null_object)
       Rakismet::Base.send(:akismet_call, 'bogus-function')
     end
     
