@@ -2,6 +2,16 @@ require 'net/http'
 require 'uri'
 
 module Rakismet
+  module Version
+    Major = '0'
+    Minor = '2'
+    Tiny  = '2'
+  end
+
+  def self.version
+    [Version::Major, Version::Minor, Version::Tiny].join('.')
+  end
+
   class Base
     cattr_accessor :valid_key, :rakismet_binding
     
@@ -53,7 +63,7 @@ module Rakismet
   NoBinding = Class.new(NameError)
   
   HEADERS = {
-    'User-Agent' => "Rails/#{Rails::VERSION::STRING} | Rakismet/0.2.2",
+    'User-Agent' => "Rails/#{Rails::VERSION::STRING} | Rakismet/#{Rakismet.version}",
     'Content-Type' => 'application/x-www-form-urlencoded'
   }
 end
