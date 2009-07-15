@@ -2,7 +2,8 @@ Rakismet
 ========
 
 Akismet [http://akismet.com/] is a collaborative spam filtering service.
-Rakismet is easy Akismet integration with your Rails app.
+Rakismet is easy Akismet integration with your Rails app, including support
+for TypePad's AntiSpam service.
 
 
 Setup
@@ -58,7 +59,7 @@ accessible through that class's associations.
 
 user_ip, user_agent, and referrer are optional; you don't have to store them,
 but it's a good idea. If you omit them from your model (see "Customizing
-Attributes"), the +spam?+ method will attempt to extract these values from the
+Attributes"), the `spam?` method will attempt to extract these values from the
 current request object, if there is one. This means Rakismet can operate
 asynchronously by storing the request attributes and validating the comment at
 a later time. Or it can operate synchronously by plucking the request
@@ -114,14 +115,14 @@ Or you can pass in a proc, to access associations:
 For any attribute you don't specify, Rakismet will try to find an attribute or 
 method matching the default name. As mentioned above, if user_ip, user_agent,
 and referrer are not present on your model, Rakismet will attempt to find them
-in the request environment when +spam?+ is called from within a Rakismet-aware
+in the request environment when `spam?` is called from within a Rakismet-aware
 controller action.
 
 Controller Behavior
 ===================
 
 Most of the time you won't be checking for spam on every action defined in
-your controller. If you only call +spam?+ within CommentsController#create and
+your controller. If you only call `spam?` within CommentsController#create and
 you'd like to reduce filter overhead, has_rakismet takes :only and :except
 parameters that work like the standard before/around/after filter options.
 
@@ -130,5 +131,5 @@ parameters that work like the standard before/around/after filter options.
   end
 
 
-==============================================================
+--------------------------------------------------------------
 Copyright (c) 2008 Josh French, released under the MIT license
