@@ -43,24 +43,24 @@ model and a CommentsController:
 Basic Usage
 ===========
 
-    Rakismet provides three methods for interacting with Akismet:
+Rakismet provides three methods for interacting with Akismet:
 
-      `spam?`
+  `spam?`
 
-    From within a CommentsController action, simply call `@comment.spam?` to get a
-    true/false response. True means it's spam, false means it's not. Well,
-    usually; it's possible something went wrong and Akismet returned an error
-    message. `@comment.spam?` will return false if this happens. You can check
-    `@comment.akismet_response` to be certain; anything other than 'true' or
-    'false' means you got an error. That said, as long as you're collecting the
-    data listed above it's probably sufficient to check `spam?` alone.
+From within a CommentsController action, simply call `@comment.spam?` to get a
+true/false response. True means it's spam, false means it's not. Well,
+usually; it's possible something went wrong and Akismet returned an error
+message. `@comment.spam?` will return false if this happens. You can check
+`@comment.akismet_response` to be certain; anything other than 'true' or
+'false' means you got an error. That said, as long as you're collecting the
+data listed above it's probably sufficient to check `spam?` alone.
 
-      `ham!` and `spam!`
+  `ham!` and `spam!`
 
-    Akismet works best with your feedback. If you spot a comment that was
-    erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
-    as a false positive. Likewise if they missed a spammy comment,
-    `@comment.spam!` will resubmit marked as spam.
+Akismet works best with your feedback. If you spot a comment that was
+erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
+as a false positive. Likewise if they missed a spammy comment,
+`@comment.spam!` will resubmit marked as spam.
 
 
 What's Required in the Comment Model?
