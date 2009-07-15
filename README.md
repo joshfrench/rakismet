@@ -1,7 +1,7 @@
 Rakismet
 ========
 
-Akismet <http://akismet.com/> is a collaborative spam filtering service.
+Akismet (http://akismet.com/) is a collaborative spam filtering service.
 Rakismet is easy Akismet integration with your Rails app, including support
 for TypePad's AntiSpam service.
 
