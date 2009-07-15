@@ -1,8 +1,8 @@
 Rakismet
 ========
 
-Akismet (http://akismet.com/) is a collaborative spam filtering service.
-Rakismet is easy Akismet integration with your Rails app, including support
+**Akismet** (<http://akismet.com/>) is a collaborative spam filtering service.
+**Rakismet** is easy Akismet integration with your Rails app, including support
 for TypePad's AntiSpam service.
 
 
@@ -21,9 +21,9 @@ your app. Rakismet::URL must be a fully qualified URI including the http://.
 
 If that file is missing, create it and add the following:
 
-  Rakismet::KEY  = 'your key from WordPress'
-  Rakismet::URL  = 'http://base url for your application/'
-  Rakismet::HOST = 'rest.akismet.com'
+    Rakismet::KEY  = 'your key from WordPress'
+    Rakismet::URL  = 'http://base url for your application/'
+    Rakismet::HOST = 'rest.akismet.com'
 
 The Rakismet host can be changed if you wish to use another Akismet-compatible
 API provider such as TypePad's antispam service.
@@ -31,13 +31,13 @@ API provider such as TypePad's antispam service.
 Now introduce Rakismet to your application. Let's assume you have a Comment
 model and a CommentsController:
 
-  class Comment < ActiveRecord::Base
-    has_rakismet
-  end
+    class Comment < ActiveRecord::Base
+      has_rakismet
+    end
 
-  class CommentsController < ActionController::Base
-    has_rakismet
-  end
+    class CommentsController < ActionController::Base
+      has_rakismet
+    end
 
 
 Model Requirements
@@ -47,15 +47,15 @@ Rakismet sends the following information to the spam-hungry robots at Akismet.
 This means these attributes should be stored in your Comment model or
 accessible through that class's associations.
 
-  author        : name submitted with the comment
-  author_url    : URL submitted with the comment
-  author_email  : email submitted with the comment
-  comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
-  content       : the content submitted
-  permalink     : the permanent URL for the entry the comment belongs to
-  user_ip       : IP address used to submit this comment
-  user_agent    : user agent string
-  referrer      : http referer
+    author        : name submitted with the comment
+    author_url    : URL submitted with the comment
+    author_email  : email submitted with the comment
+    comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
+    content       : the content submitted
+    permalink     : the permanent URL for the entry the comment belongs to
+    user_ip       : IP address used to submit this comment
+    user_agent    : user agent string
+    referrer      : http referer
 
 `user_ip`, `user_agent`, and `referrer` are optional; you don't have to store
 them, but it's a good idea. If you omit them from your model (see "Customizing
@@ -73,7 +73,7 @@ Basic Usage
 
 Rakismet provides three methods for interacting with Akismet:
 
-  `spam?`
+  **`spam?`**
 
 From within a CommentsController action, simply call `@comment.spam?` to get a
 true/false response. True means it's spam, false means it's not. Well,
@@ -83,7 +83,7 @@ message. `@comment.spam?` will return false if this happens. You can check
 'false' means you got an error. That said, as long as you're collecting the
 data listed above it's probably sufficient to check `spam?` alone.
 
-  `ham!` and `spam!`
+  **`ham!`** and **`spam!`**
 
 Akismet works best with your feedback. If you spot a comment that was
 erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
@@ -99,18 +99,18 @@ live on other objects, you can pass `has_rakismet` a hash mapping the default
 attributes to your own. You can change the names, if your comment attributes
 don't match the defaults:
 
-  class Comment < ActiveRecord::Base
-    has_rakismet :author => :commenter_name,
-                 :author_email => :commenter_email
-  end
+    class Comment < ActiveRecord::Base
+      has_rakismet :author => :commenter_name,
+                   :author_email => :commenter_email
+    end
 
 Or you can pass in a proc, to access associations:
 
-  class Comment < ActiveRecord::Base
-    belongs_to :author
-    has_rakismet :author => proc { author.name },
-                 :author_email => proc { author.email }
-  end
+    class Comment < ActiveRecord::Base
+      belongs_to :author
+      has_rakismet :author => proc { author.name },
+                   :author_email => proc { author.email }
+    end
 
 For any attribute you don't specify, Rakismet will try to find an attribute or 
 method matching the default name. As mentioned above, if `user_ip`,
@@ -127,9 +127,9 @@ and you'd like to reduce filter overhead, `has_rakismet` takes `:only` and
 `:except` parameters that work like the standard before/around/after filter
 options.
 
-  class CommentsController < ActionController::Base
-    has_rakismet :only => :create
-  end
+    class CommentsController < ActionController::Base
+      has_rakismet :only => :create
+    end
 
 
 --------------------------------------------------------------
