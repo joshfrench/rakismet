@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rakismet}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Josh French"]
@@ -10,7 +10,18 @@ Gem::Specification.new do |s|
   s.description = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service. This version is a fork Josh French's rakismet plugin.}
   s.email = %q{systems@inspiredigital.com.au}
   s.extra_rdoc_files = ["README.md", "MIT-LICENSE"]
-  s.files = ["CHANGELOG", "README.md", "rails/init.rb", "lib/rakismet.rb", "lib/rakismet", "lib/rakismet/controller_extensions.rb", "lib/rakismet/model_extensions.rb", "MIT-LICENSE"]
+  s.files = [
+    "CHANGELOG", 
+    "README.md",
+    "MIT-LICENSE",
+    "rails/init.rb", 
+    "lib/rakismet.rb", 
+    "lib/rakismet", 
+    "lib/rakismet/controller_extensions.rb", 
+    "lib/rakismet/model_extensions.rb",
+    "generators/rakismet/rakismet_generator.rb",
+    "generators/rakismet/templates/config/initializers/rakismet.rb"
+  ]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/inspiredigital/rakismet}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
