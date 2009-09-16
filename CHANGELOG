@@ -1,3 +1,5 @@
+= 0.3.1
+* Added gemspec and rails/init.rb so rakismet can work as a gem
 = 0.3.0
 * Abstract out Rakismet version string
 * Set default Akismet Host

@@ -5,7 +5,7 @@ module Rakismet
   module Version
     Major = '0'
     Minor = '3'
-    Tiny  = '0'
+    Tiny  = '1'
   end
 
   def self.version
