@@ -1,4 +1,4 @@
-class RakismetGenerator < Rails::Generator::NamedBase
+class RakismetGenerator < Rails::Generator::Base
   def manifest
     record do |m|
       m.file "config/initializers/rakismet.rb", "config/initializers/rakismet.rb"
