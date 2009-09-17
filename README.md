@@ -131,6 +131,13 @@ options.
       has_rakismet :only => :create
     end
 
+Forked
+=============================
 
+At the time of forking, the only addition to this project has been to add gemspec 
+and generator templates so rakismet can be used as a gem. This is a better solution
+when working with reloadable plugins as rakismet is not compatible when plugins are
+reloadable.
+    
 --------------------------------------------------------------
 Copyright (c) 2008 Josh French, released under the MIT license
