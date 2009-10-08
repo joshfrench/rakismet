@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Josh French"]
   s.date = %q{2009-09-16}
-  s.description = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service. This version is a fork Josh French's rakismet plugin.}
+  s.description = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service.}
   s.email = %q{systems@inspiredigital.com.au}
   s.extra_rdoc_files = ["README.md", "MIT-LICENSE"]
   s.files = [
@@ -23,12 +23,12 @@ Gem::Specification.new do |s|
     "generators/rakismet/templates/config/initializers/rakismet.rb"
   ]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/inspiredigital/rakismet}
+  s.homepage = %q{http://github.com/jfrench/rakismet}
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rakismet}
   s.rubygems_version = %q{1.3.2}
-  s.summary = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service. This version is a fork Josh French's rakismet plugin.}
+  s.summary = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service.}
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
