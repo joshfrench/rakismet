@@ -9,26 +9,39 @@ for TypePad's AntiSpam service.
 Setup
 =====
 
+As a plugin
+-----------
+
 Install with `script/plugin install git://github.com/jfrench/rakismet`
 
-To get up and running with Rakismet, you'll need an API key from the folks at
-WordPress. Head on over to http://wordpress.com/api-keys/ and sign up for a
-new username.
-
 Rakismet installation should have created a file called rakismet.rb in
-config/initializers. Add your WordPress key and the front page or home URL of
-your app. Rakismet::URL must be a fully qualified URI including the http://.
+config/initializers. If not, you can copy the template from:
+vendor/plugins/rakismet/generators/rakismet/templates/config/initializers/rakismet.rb.
 
-If that file is missing, create it and add the following:
+As a gem
+--------
 
-    Rakismet::KEY  = 'your key from WordPress'
-    Rakismet::URL  = 'http://base url for your application/'
-    Rakismet::HOST = 'rest.akismet.com'
+`gem install rakismet` if you're using gemcutter or 
+`gem install jfrench-rakismet` if you're using GitHub.
 
-The Rakismet host can be changed if you wish to use another Akismet-compatible
-API provider such as TypePad's antispam service.
+From your app root, run `./script/generate rakismet` to create the Rakismet
+initializer.
 
-Now introduce Rakismet to your application. Let's assume you have a Comment
+Getting Started
+---------------
+
+Once you've installed Rakismet via your method of choice, you'll need an API 
+key from the folks at WordPress. Head on over to http://wordpress.com/api-keys/ 
+and sign up for a new username.
+
+Edit config/initializers/rakismet.rb and fill in `Rakismet::URL` and
+`Rakismet::KEY` with the URL of your application and the key you received
+from WordPress.
+
+If you wish to use another Akismet-compatible API provider such as TypePad's
+antispam service, you'll also need to change the `Rakismet::HOST`.
+
+Finally, introduce Rakismet to your application. Let's assume you have a Comment
 model and a CommentsController:
 
     class Comment < ActiveRecord::Base
