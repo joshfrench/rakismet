@@ -1,3 +1,5 @@
+= 0.3.6
+* Allow attributes to fall through to methods or AR attributes
 = 0.3.5
 * Added gemspec and rails/init.rb so rakismet can work as a gem [Michael Air]
 * Added generator template and manifest [Michael Air]
