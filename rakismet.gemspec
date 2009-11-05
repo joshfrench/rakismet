@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rakismet}
-  s.version = "0.3.5"
+  s.version = "0.3.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Josh French"]
-  s.date = %q{2009-09-16}
+  s.date = %q{2009-11-05}
   s.description = %q{Rakismet is easy Akismet integration with your Rails app, including support for TypePad's AntiSpam service.}
-  s.email = %q{systems@inspiredigital.com.au}
+  s.email = %q{josh@digitalpulp.com}
   s.extra_rdoc_files = ["README.md", "MIT-LICENSE"]
   s.files = [
     "CHANGELOG", 
