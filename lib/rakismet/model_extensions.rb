@@ -19,7 +19,7 @@ module Rakismet
            self.akismet_attrs[fieldname] = args.delete(field) || field
         end
         [:user_ip, :user_agent, :referrer].each do |field|
-          self.akismet_attrs[field] = (args.delete(field) || field) if args.has_key?(field) or self.public_instance_methods.include?(field.to_s)
+          self.akismet_attrs[field] = args.delete(field)
         end
         args.each_pair do |f,v|
           self.akismet_attrs[f] = v
@@ -56,12 +56,14 @@ module Rakismet
           self.class.akismet_attrs.keys.inject({}) do |data,attr|
             data.merge attr =>  if self.class.akismet_attrs[attr].is_a?(Proc)
                                   instance_eval(&self.class.akismet_attrs[attr])
-                                elsif respond_to?(self.class.akismet_attrs[attr])
+                                elsif !self.class.akismet_attrs[attr].nil? && respond_to?(self.class.akismet_attrs[attr])
                                   send(self.class.akismet_attrs[attr])
-                                else
+                                elsif !self.class.akismet_attrs[attr].nil?
                                   self.class.akismet_attrs[attr]
+                                elsif respond_to?(attr)
+                                  send(attr)
                                 end
-          end
+          end.delete_if { |k,v| v.blank? }
         end
     end
     

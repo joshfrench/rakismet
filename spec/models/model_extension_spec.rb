@@ -26,6 +26,12 @@ describe AkismetModel do
      end
   end
   
+  it "should have nil placeholders for optional binding variables" do
+    [:user_ip, :user_agent, :referrer].each do |field|
+      AkismetModel.akismet_attrs.should have_key(field)
+     end
+  end
+
   mapped_params = { :comment_type => :type2, :author => :author2, :content => :content2,
                     :author_email => :author_email2, :author_url => :author_url2 }
     
@@ -37,18 +43,10 @@ describe AkismetModel do
        end
     end
   end
-  
-  describe implicit = AkismetModel.subclass('Implicit') { attr_accessor(:user_ip, :user_agent, :referrer); has_rakismet } do
-    it "should map optional fields if they are present in the model" do
-      [:user_ip, :user_agent, :referrer].each do |field|
-        implicit.akismet_attrs[field].should eql(field)
-      end
-    end
-  end
-  
+
   extended_params = { :user_ip => :stored_ip, :user_agent => :stored_agent,
                       :referrer => :stored_referrer }
-                      
+
   describe extended = AkismetModel.subclass('Extended') { has_rakismet(extended_params.dup) } do
     
     before do
