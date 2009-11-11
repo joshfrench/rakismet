@@ -24,6 +24,9 @@ As a gem
 `gem install rakismet` if you're using gemcutter or 
 `gem install jfrench-rakismet` if you're using GitHub.
 
+In config/environment.rb, require the gem by adding `config.gem 'rakismet'`
+within the config block.
+
 From your app root, run `./script/generate rakismet` to create the Rakismet
 initializer.
 
