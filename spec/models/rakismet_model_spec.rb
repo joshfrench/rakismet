@@ -3,13 +3,11 @@ require 'ostruct'
 
 class AkismetModel
   include Rakismet::Model
-  rakismet_attrs
 end
 
 class StoredParams
   include Rakismet::Model
   attr_accessor :user_ip, :user_agent, :referrer
-  rakismet_attrs
 end
 
 describe AkismetModel do

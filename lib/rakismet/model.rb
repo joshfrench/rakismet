@@ -7,6 +7,7 @@ module Rakismet
         class_inheritable_hash :akismet_attrs
         extend ClassMethods
         include InstanceMethods
+        self.rakismet_attrs
       end
     end
    
