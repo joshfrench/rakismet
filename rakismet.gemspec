@@ -14,11 +14,10 @@ Gem::Specification.new do |s|
     "CHANGELOG", 
     "README.md",
     "MIT-LICENSE",
-    "rails/init.rb", 
     "lib/rakismet.rb", 
     "lib/rakismet", 
-    "lib/rakismet/controller_extensions.rb", 
-    "lib/rakismet/model_extensions.rb",
+    "lib/rakismet/controller.rb", 
+    "lib/rakismet/model.rb",
     "generators/rakismet/rakismet_generator.rb",
     "generators/rakismet/templates/config/initializers/rakismet.rb"
   ]
