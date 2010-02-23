@@ -1,5 +1,5 @@
 module Rakismet
-  module ControllerExtensions
+  module Controller
     
     def self.included(base)
       base.class_eval do

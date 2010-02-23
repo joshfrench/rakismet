@@ -2,12 +2,12 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'ostruct'
 
 class AkismetModel
-  include Rakismet::ModelExtensions
+  include Rakismet::Model
   has_rakismet
 end
 
 class StoredParams
-  include Rakismet::ModelExtensions
+  include Rakismet::Model
   attr_accessor :user_ip, :user_agent, :referrer
   has_rakismet
 end

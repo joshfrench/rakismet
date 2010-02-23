@@ -1,2 +1,2 @@
-ActionController::Base.send :include, Rakismet::ControllerExtensions
-ActiveRecord::Base.send :include, Rakismet::ModelExtensions
+ActionController::Base.send :include, Rakismet::Controller
+ActiveRecord::Base.send :include, Rakismet::Model

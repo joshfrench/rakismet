@@ -1,5 +1,5 @@
 module Rakismet
-  module ModelExtensions
+  module Model
    
     def self.included(base)
       base.class_eval do
