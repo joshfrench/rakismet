@@ -4,6 +4,7 @@ module Rakismet
     def self.included(base)
       base.class_eval do
         extend ClassMethods
+        around_filter :rakismet
       end
     end
     

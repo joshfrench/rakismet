@@ -5,7 +5,7 @@ ActionController::Routing::Routes.draw do |map|
 end
 
 class StubController < ActionController::Base
-  rakismet_filter
+  include Rakismet::Controller
   def one ; render :nothing => true; end
   def two ; render :nothing => true; end
 end
