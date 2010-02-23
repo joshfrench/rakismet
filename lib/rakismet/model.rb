@@ -11,7 +11,7 @@ module Rakismet
     end
    
     module ClassMethods
-      def has_rakismet(args={})
+      def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
         [:comment_type, :author, :author_url, :author_email, :content].each do |field|
            # clunky, but throwing around +type+ will break your heart

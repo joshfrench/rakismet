@@ -5,7 +5,7 @@ ActionController::Routing::Routes.draw do |map|
 end
 
 class StubController < ActionController::Base
-  has_rakismet
+  rakismet_filter
   def one ; render :nothing => true; end
   def two ; render :nothing => true; end
 end
@@ -27,7 +27,7 @@ describe StubController do
   end
 end
 
-describe StubController.subclass('OnlyActions') { has_rakismet(:only => :one) } do
+describe StubController.subclass('OnlyActions') { rakismet_filter(:only => :one) } do
 
   it "should add around filter to specified actions" do
     Rakismet::Base.should_receive(:rakismet_binding=).twice
@@ -40,7 +40,7 @@ describe StubController.subclass('OnlyActions') { has_rakismet(:only => :one) } 
   end
 end
 
-describe StubController.subclass('ExceptActions') { has_rakismet(:except => :one) } do
+describe StubController.subclass('ExceptActions') { rakismet_filter(:except => :one) } do
 
   it "should not add around filter to specified actions" do
     Rakismet::Base.should_not_receive(:rakismet_binding=)

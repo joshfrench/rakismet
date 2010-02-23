@@ -3,13 +3,13 @@ require 'ostruct'
 
 class AkismetModel
   include Rakismet::Model
-  has_rakismet
+  rakismet_attrs
 end
 
 class StoredParams
   include Rakismet::Model
   attr_accessor :user_ip, :user_agent, :referrer
-  has_rakismet
+  rakismet_attrs
 end
 
 describe AkismetModel do
@@ -35,7 +35,7 @@ describe AkismetModel do
   mapped_params = { :comment_type => :type2, :author => :author2, :content => :content2,
                     :author_email => :author_email2, :author_url => :author_url2 }
     
-  describe override = AkismetModel.subclass('Override') { has_rakismet(mapped_params.dup) } do
+  describe override = AkismetModel.subclass('Override') { rakismet_attrs(mapped_params.dup) } do
     it "should override default mappings" do
       [:comment_type, :author, :author_url, :author_email, :content].each do |field|
         fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
@@ -47,7 +47,7 @@ describe AkismetModel do
   extended_params = { :user_ip => :stored_ip, :user_agent => :stored_agent,
                       :referrer => :stored_referrer }
 
-  describe extended = AkismetModel.subclass('Extended') { has_rakismet(extended_params.dup) } do
+  describe extended = AkismetModel.subclass('Extended') { rakismet_attrs(extended_params.dup) } do
     
     before do
       @extended = extended.new
@@ -83,7 +83,7 @@ describe AkismetModel do
   @proc = proc { author.reverse }
   block_params = { :author => @proc }
 
-  describe block = AkismetModel.subclass('Block') { has_rakismet(block_params) } do
+  describe block = AkismetModel.subclass('Block') { rakismet_attrs(block_params) } do
 
     before do
       @block = block.new
@@ -102,7 +102,7 @@ describe AkismetModel do
 
   extra_params = { :extra => :extra, :another => lambda { } }
 
-  describe extra = AkismetModel.subclass('ExtraParams') { has_rakismet(extra_params.dup) } do
+  describe extra = AkismetModel.subclass('ExtraParams') { rakismet_attrs(extra_params.dup) } do
     it "should map additional attributes" do
       [:extra, :another].each do |field|
         extra.akismet_attrs[field].should eql(extra_params[field])
@@ -112,7 +112,7 @@ describe AkismetModel do
 
   string_params = { :comment_type => 'pingback' }
 
-  describe string = AkismetModel.subclass('StringParams') { has_rakismet(string_params) } do
+  describe string = AkismetModel.subclass('StringParams') { rakismet_attrs(string_params) } do
 
     before do
       @string = string.new
