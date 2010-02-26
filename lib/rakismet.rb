@@ -1,15 +1,13 @@
 require 'net/http'
 require 'uri'
+require 'yaml'
 
 module Rakismet
-  module Version
-    Major = '0'
-    Minor = '3'
-    Tiny  = '6'
-  end
-
   def self.version
-    [Version::Major, Version::Minor, Version::Tiny].join('.')
+    @version ||= begin
+      version = YAML.load_file(File.join(File.dirname(__FILE__), %w(.. VERSION.yml)))
+      [version[:major], version[:minor], version[:patch]].join('.')
+    end
   end
 
   class Base
