@@ -72,8 +72,8 @@ however. If yours differ, just tell Rakismet what to call them:
     class Comment
       include Rakismet::Model
       attr_accessor :commenter_name, :commenter_email
-      rakismet_attributes :author => :commenter_name,
-                          :author_email => :commenter_email
+      rakismet_attrs :author => :commenter_name,
+                     :author_email => :commenter_email
     end
 
 Or you can pass in a proc, to access associations:
@@ -81,8 +81,8 @@ Or you can pass in a proc, to access associations:
     class Comment < ActiveRecord::Base
       include Rakismet::Model
       belongs_to :author
-      rakismet_attributes :author => proc { author.name },
-                          :author_email => proc { author.email }
+      rakismet_attrs :author => proc { author.name },
+                     :author_email => proc { author.email }
     end
 
 Rakismet::Controller
