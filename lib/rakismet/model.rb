@@ -1,5 +1,5 @@
 module Rakismet
-  module ModelExtensions
+  module Model
    
     def self.included(base)
       base.class_eval do
@@ -7,11 +7,12 @@ module Rakismet
         class_inheritable_hash :akismet_attrs
         extend ClassMethods
         include InstanceMethods
+        self.rakismet_attrs
       end
     end
    
     module ClassMethods
-      def has_rakismet(args={})
+      def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
         [:comment_type, :author, :author_url, :author_email, :content].each do |field|
            # clunky, but throwing around +type+ will break your heart

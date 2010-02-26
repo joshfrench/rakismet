@@ -21,8 +21,7 @@ vendor/plugins/rakismet/generators/rakismet/templates/config/initializers/rakism
 As a gem
 --------
 
-`gem install rakismet` if you're using gemcutter or 
-`gem install jfrench-rakismet` if you're using GitHub.
+`gem install rakismet`
 
 In config/environment.rb, require the gem by adding `config.gem 'rakismet'`
 within the config block.
@@ -31,7 +30,7 @@ From your app root, run `./script/generate rakismet` to create the Rakismet
 initializer.
 
 Getting Started
----------------
+===============
 
 Once you've installed Rakismet via your method of choice, you'll need an API 
 key from the folks at WordPress. Head on over to http://wordpress.com/api-keys/ 
@@ -42,49 +41,19 @@ Edit config/initializers/rakismet.rb and fill in `Rakismet::URL` and
 from WordPress.
 
 If you wish to use another Akismet-compatible API provider such as TypePad's
-antispam service, you'll also need to change the `Rakismet::HOST`.
+antispam service, you'll also need to change the `Rakismet::HOST` to your
+service provider's endpoint.
 
-Finally, introduce Rakismet to your application. Let's assume you have a
-Comment model and a CommentsController:
+Rakismet::Model
+---------------
 
-    class Comment < ActiveRecord::Base
-      has_rakismet
-    end
+First, introduce Rakismet to your model:
 
-    class CommentsController < ActionController::Base
-      has_rakismet
-    end
+    class Comment
+	  include Rakismet::Model
+	end
 
-
-Basic Usage
-===========
-
-Rakismet provides three methods for interacting with Akismet:
-
-  `spam?`
-
-From within a CommentsController action, simply call `@comment.spam?` to get a
-true/false response. True means it's spam, false means it's not. Well,
-usually; it's possible something went wrong and Akismet returned an error
-message. `@comment.spam?` will return false if this happens. You can check
-`@comment.akismet_response` to be certain; anything other than 'true' or
-'false' means you got an error. That said, as long as you're collecting the
-data listed above it's probably sufficient to check `spam?` alone.
-
-  `ham!` and `spam!`
-
-Akismet works best with your feedback. If you spot a comment that was
-erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
-as a false positive. Likewise if they missed a spammy comment,
-`@comment.spam!` will resubmit marked as spam.
-
-
-What's Required in the Comment Model?
-=====================================
-
-Rakismet sends the following information to the spam-hungry robots at Akismet.
-This means these attributes should be stored in your Comment model or
-accessible through that class's associations.
+Rakismet sends the following information to the spam-hungry robots at Akismet:
 
     author        : name submitted with the comment
     author_url    : URL submitted with the comment
@@ -96,56 +65,92 @@ accessible through that class's associations.
     user_agent    : user agent string
     referrer      : http referer
 
-`user_ip`, `user_agent`, and `referrer` are optional; you don't have to store
-them, but it's a good idea. If you omit them from your model (see "Customizing
-Attributes"), the `spam?` method will attempt to extract these values from the
-current request object, if there is one. This means Rakismet can operate
-asynchronously by storing the request attributes and validating the comment at
-a later time. Or it can operate synchronously by plucking the request
-attributes from the environment at the time the comment is initially submitted
-and validating on the spot. The latter could work well with a before_create
-callback.
+By default, Rakismet just looks for attributes or methods on your class that
+match these names. You don't have to have accessors that match these exactly,
+however. If yours differ, just tell Rakismet what to call them:
 
-
-Customizing the Comment Model
-=============================
-
-If your attribute names don't match those listed above, or if some of them
-live on other objects, you can pass `has_rakismet` a hash mapping the default 
-attributes to your own. You can change the names, if your comment attributes
-don't match the defaults:
-
-    class Comment < ActiveRecord::Base
-      has_rakismet :author => :commenter_name,
-                   :author_email => :commenter_email
+    class Comment
+      include Rakismet::Model
+      attr_accessor :commenter_name, :commenter_email
+      rakismet_attributes :author => :commenter_name,
+                          :author_email => :commenter_email
     end
 
 Or you can pass in a proc, to access associations:
 
     class Comment < ActiveRecord::Base
+      include Rakismet::Model
       belongs_to :author
-      has_rakismet :author => proc { author.name },
-                   :author_email => proc { author.email }
+      rakismet_attributes :author => proc { author.name },
+                          :author_email => proc { author.email }
     end
 
-For any attribute you don't specify, Rakismet will try to find an attribute or 
-method matching the default name. As mentioned above, if `user_ip`,
-`user_agent`, and `referrer` are not present on your model, Rakismet will
-attempt to find them in the request environment when `spam?` is called from
-within a Rakismet-aware controller action.
+Rakismet::Controller
+--------------------
+Perhaps you want to check a comment's spam status at creation time, and you
+have no need to keep track of request-specific information such as the user's
+IP, user agent, or referrer.
 
-Customizing the Comments Controller
-===================================
+You can add Rakismet to a controller and the IP, user agent, and referrer will
+be taken from the current request instead of your model instance.
 
-Most of the time you won't be checking for spam on every action defined in
-your controller. If you only call `spam?` within `CommentsController#create` 
-and you'd like to reduce filter overhead, `has_rakismet` takes `:only` and
-`:except` parameters that work like the standard before/around/after filter
-options.
+    class MyController < ActionController::Base
+      include Rakismet::Controller
+	end
 
-    class CommentsController < ActionController::Base
-      has_rakismet :only => :create
+Since you probably won't be checking for spam in every action, Rakismet takes
+`:only` and `:except` options just like other filters. You can reduce overhead
+by specifying just the appropriate actions:
+
+    class MyController < ActionController::Base
+      include Rakismet::Controller
+      rakismet_filter :only => :create
     end
+
+Checking For Spam
+=================
+
+Rakismet provides three methods for interacting with Akismet:
+
+ * `spam?`
+
+Simply call `@comment.spam?` to get a true/false response. True means it's spam, false means it's not. Well, usually; it's possible something went wrong
+and Akismet returned an error message. `@comment.spam?` will return false if
+this happens. You can check `@comment.akismet_response` to be certain;
+anything other than 'true' or 'false' means you got an error. That said, as
+long as you're collecting the data listed above it's probably sufficient to
+check `spam?` alone.
+
+Keep in mind that if you call `spam?` from within a controller action that
+uses the Rakismet filter, the user IP, user agent, and referrer will be taken
+from the current request regardless of what your model attributes are. In
+other words: if you're not verifying comments at the moment they're submitted,
+you probably want to store those attributes rather than rely on the controller
+methods.
+
+ * `ham!` and 
+ * `spam!`
+
+Akismet works best with your feedback. If you spot a comment that was
+erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
+as a false positive. Likewise if they missed a spammy comment,
+`@comment.spam!` will resubmit marked as spam.
+
+Updating from Rakismet < 0.4
+----------------------------
+There were some significant changes to the API in version 0.4. This was done
+to make Rakismet easier to use with persistence layers other than
+ActiveRecord.
+
+If you're updating from an older version, please note:
+
+ * Rakismet is no longer automatically injected into ActiveRecord and
+   ActionController. You'll need to manually include Rakismet with
+   `include Rakismet::Model` and `include Rakismet::Controller`.
+ * `ActiveRecord::Base#has_rakismet` now becomes
+   `Rakismet::Model#rakismet_attrs`.
+ * `ActionController::Base#has_rakismet` now becomes
+   `Rakismet::Controller#rakismet_filter`.
 
 --------------------------------------------------------------
 Copyright (c) 2008 Josh French, released under the MIT license

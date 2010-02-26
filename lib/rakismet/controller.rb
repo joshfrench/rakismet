@@ -1,9 +1,10 @@
 module Rakismet
-  module ControllerExtensions
+  module Controller
     
     def self.included(base)
       base.class_eval do
         extend ClassMethods
+        around_filter :rakismet
       end
     end
     
@@ -15,7 +16,7 @@ module Rakismet
     private :rakismet
 
     module ClassMethods
-      def has_rakismet(opts={})
+      def rakismet_filter(opts={})
         skip_filter :rakismet # in case we're inheriting from another Rakismeted controller
         opts.assert_valid_keys(:only, :except)
         self.around_filter :rakismet, opts
