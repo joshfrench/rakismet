@@ -10,6 +10,7 @@ begin
     gem.email = "josh@digitalpulp.com"
     gem.homepage = "http://github.com/jfrench/rakismet"
     gem.authors = ["Josh French"]
+    gem.rubyforge_project = %q{rakismet}
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
