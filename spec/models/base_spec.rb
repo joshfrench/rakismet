@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Rakismet::Base do
 
-  before do
+  before :all do
     load File.join(RAILS_ROOT, 'config', 'initializers', 'rakismet.rb')
   end
 
