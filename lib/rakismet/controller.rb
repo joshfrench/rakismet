@@ -4,22 +4,15 @@ module Rakismet
     def self.included(base)
       base.class_eval do
         extend ClassMethods
-        around_filter :rakismet
+        around_filter Rakismet::Filter
       end
     end
-    
-    def rakismet(&block)
-      Rakismet::Base.rakismet_binding = binding
-      yield
-      Rakismet::Base.rakismet_binding = nil
-    end
-    private :rakismet
 
     module ClassMethods
       def rakismet_filter(opts={})
-        skip_filter :rakismet # in case we're inheriting from another Rakismeted controller
+        skip_filter Rakismet::Filter # in case we're inheriting/overriding an existing Rakismet filter
         opts.assert_valid_keys(:only, :except)
-        self.around_filter :rakismet, opts
+        self.around_filter Rakismet::Filter, opts
       end
     end
     

@@ -125,7 +125,7 @@ describe AkismetModel do
   describe ".spam?" do
     
     before do
-      Rakismet::Base.rakismet_binding = request_binding
+      Rakismet::Base.current_request = request
     end
     
     it "should eval request variables in context of Base.rakismet_binding" do
@@ -159,14 +159,14 @@ describe AkismetModel do
     end
 
     it "should not throw an error if request vars are missing" do
-      Rakismet::Base.rakismet_binding = nil_binding
+      Rakismet::Base.current_request = empty_request
       lambda { @model.spam? }.should_not raise_error(NoMethodError)
     end
   end
   
   describe StoredParams do
       before do
-        Rakismet::Base.rakismet_binding = nil
+        Rakismet::Base.current_request = nil
         @model = StoredParams.new
         comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
       end
@@ -226,18 +226,16 @@ describe AkismetModel do
         :comment_content => 'comment content' }.merge(attrs)
     end
     
-    def request_binding
-      request = OpenStruct.new(:remote_ip => '127.0.0.1',
-                               :user_agent => 'RSpec',
-                               :referer => 'http://test.host/referrer')
-      binding
+    def request
+      OpenStruct.new(:remote_ip => '127.0.0.1',
+                     :user_agent => 'RSpec',
+                     :referer => 'http://test.host/referrer')
     end
 
-    def nil_binding
-      request = OpenStruct.new(:remote_ip => nil,
-                               :user_agent => nil,
-                               :referer => nil)
-      binding
+    def empty_request
+      OpenStruct.new(:remote_ip => nil,
+                     :user_agent => nil,
+                     :referer => nil)
     end
 
 end

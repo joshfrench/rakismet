@@ -11,7 +11,7 @@ module Rakismet
   end
 
   class Base
-    cattr_accessor :valid_key, :rakismet_binding
+    cattr_accessor :valid_key, :current_request
     
     class << self
       def validate_key
@@ -58,7 +58,6 @@ module Rakismet
   end
   
   Undefined = Class.new(NameError)
-  NoBinding = Class.new(NameError)
   
   HEADERS = {
     'User-Agent' => "Rails/#{Rails::VERSION::STRING} | Rakismet/#{Rakismet.version}",

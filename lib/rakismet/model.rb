@@ -35,10 +35,10 @@ module Rakismet
         else
           data = akismet_data
 
-          unless Rakismet::Base.rakismet_binding.nil?
-            { :referrer => 'request.referer', :user_ip => 'request.remote_ip',
-              :user_agent => 'request.user_agent' }.each_pair do |k,v|
-                data[k] = eval(v, Rakismet::Base.rakismet_binding) || ''
+          unless Rakismet::Base.current_request.nil?
+            { :referrer => :referer, :user_ip => :remote_ip,
+              :user_agent => :user_agent }.each_pair do |k,v|
+                data[k] = Rakismet::Base.current_request.send(v) || ''
             end
           end
 
