@@ -13,17 +13,13 @@ end
 describe StubController do
 
   it "should set Rakismet::Base.rakismet_binding" do
-    Rakismet::Base.should_receive(:rakismet_binding=).twice
+    Rakismet::Base.should_receive(:rakismet_binding=).with(an_instance_of(Binding)).ordered
+    Rakismet::Base.should_receive(:rakismet_binding=).with(nil).ordered
     get :one
-  end
-
-  it "should return Rakismet::Base.rakismet_binding to nil after request" do
-    get :one
-    Rakismet::Base.rakismet_binding.should be_nil
   end
 
   it "should add around_filter" do
-    StubController.filter_chain.map(&:class).should include(ActionController::Filters::AroundFilter)
+    StubController.filter_chain.map(&:method).should include(:rakismet)
   end
 end
 
