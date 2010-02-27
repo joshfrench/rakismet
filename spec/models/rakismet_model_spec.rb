@@ -136,6 +136,12 @@ describe AkismetModel do
       @model.spam?
     end
     
+    it "should cache result of .spam?" do
+      Rakismet::Base.should_receive(:akismet_call).once
+      @model.spam?
+      @model.spam?
+    end
+
     it "should be true if comment is spam" do
       Rakismet::Base.stub!(:akismet_call).and_return('true')
       @model.should be_spam

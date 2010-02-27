@@ -30,17 +30,21 @@ module Rakismet
     
     module InstanceMethods
       def spam?
-        data = akismet_data
+        if instance_variable_defined? :@_spam
+          @_spam
+        else
+          data = akismet_data
 
-        unless Rakismet::Base.rakismet_binding.nil?
-          { :referrer => 'request.referer', :user_ip => 'request.remote_ip',
-            :user_agent => 'request.user_agent' }.each_pair do |k,v|
-              data[k] = eval(v, Rakismet::Base.rakismet_binding) || ''
+          unless Rakismet::Base.rakismet_binding.nil?
+            { :referrer => 'request.referer', :user_ip => 'request.remote_ip',
+              :user_agent => 'request.user_agent' }.each_pair do |k,v|
+                data[k] = eval(v, Rakismet::Base.rakismet_binding) || ''
+            end
           end
-        end
 
-        self.akismet_response = Rakismet::Base.akismet_call('comment-check', data)
-        self.akismet_response == 'true'
+          self.akismet_response = Rakismet::Base.akismet_call('comment-check', data)
+          @_spam = self.akismet_response == 'true'
+        end
       end
 
       def spam!
