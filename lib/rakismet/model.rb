@@ -49,10 +49,12 @@ module Rakismet
 
       def spam!
         Rakismet::Base.akismet_call('submit-spam', akismet_data)
+        @_spam = true
       end
 
       def ham!
         Rakismet::Base.akismet_call('submit-ham', akismet_data)
+        @_spam = false
       end
 
       private

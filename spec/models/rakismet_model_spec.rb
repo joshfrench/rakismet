@@ -11,7 +11,7 @@ class StoredParams
 end
 
 describe AkismetModel do
-  
+
   before do
     @model = AkismetModel.new
     comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
@@ -136,7 +136,7 @@ describe AkismetModel do
       @model.spam?
     end
     
-    it "should cache result of .spam?" do
+    it "should cache result of #spam?" do
       Rakismet::Base.should_receive(:akismet_call).once
       @model.spam?
       @model.spam?
@@ -189,12 +189,26 @@ describe AkismetModel do
       Rakismet::Base.should_receive(:akismet_call).with('submit-spam', akismet_attrs)
       @model.spam!
     end
+
+    it "should mutate #spam?" do
+      Rakismet::Base.stub!(:akismet_call)
+      @model.instance_variable_set(:@_spam, false)
+      @model.spam!
+      @model.should be_spam
+    end
   end
 
   describe ".ham!" do
     it "should call Base.akismet_call with submit-ham" do
       Rakismet::Base.should_receive(:akismet_call).with('submit-ham', akismet_attrs)
       @model.ham!
+    end
+
+    it "should mutate #spam?" do
+      Rakismet::Base.stub!(:akismet_call)
+      @model.instance_variable_set(:@_spam, true)
+      @model.ham!
+      @model.should_not be_spam
     end
   end
   
