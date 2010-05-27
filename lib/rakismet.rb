@@ -2,6 +2,10 @@ require 'net/http'
 require 'uri'
 require 'yaml'
 
+require 'rakismet/model'
+require 'rakismet/filter'
+require 'rakismet/controller'
+
 module Rakismet
   def self.version
     @version ||= begin
