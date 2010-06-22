@@ -12,7 +12,7 @@ Setup
 As a plugin
 -----------
 
-Install with `script/plugin install git://github.com/jfrench/rakismet`
+Install with `script/plugin install git://github.com/joshfrench/rakismet`
 
 Rakismet installation should have created a file called rakismet.rb in
 config/initializers. If not, you can copy the template from:

@@ -8,7 +8,7 @@ begin
     gem.summary = %Q{Akismet and TypePad AntiSpam integration for Rails.}
     gem.description = %Q{Rakismet is the easiest way to integrate Akismet or TypePad's AntiSpam into your Rails app.}
     gem.email = "josh@digitalpulp.com"
-    gem.homepage = "http://github.com/jfrench/rakismet"
+    gem.homepage = "http://github.com/joshfrench/rakismet"
     gem.authors = ["Josh French"]
     gem.rubyforge_project = %q{rakismet}
   end
