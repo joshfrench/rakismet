@@ -217,7 +217,7 @@ describe AkismetModel do
     def comment_attrs(attrs={})
       { :comment_type => 'test', :author => 'Rails test',
         :author_email => 'test@test.host', :author_url => 'test.host',
-        :content => 'comment content', :blog => Rakismet::URL }.merge(attrs)
+        :content => 'comment content', :blog => Rakismet.url }.merge(attrs)
     end
     
     def akismet_attrs(attrs={})

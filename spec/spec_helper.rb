@@ -1,21 +1,14 @@
-ENV["RAILS_ENV"] = "test"
-require File.expand_path(File.dirname(__FILE__) + "/../../../../config/environment")
-require 'spec'
-require 'spec/rails'
+ENV["RAILS_ENV"] ||= 'test'
+require File.expand_path("../../../../../config/environment", __FILE__)
+require 'rspec/rails'
 
-Spec::Runner.configure do |config|
+Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+RSpec.configure do |config|
+  config.mock_with :rspec
 end
 
 class Class
-  # Creates a new subclass of self, with a name "under" our own name. Example:
-  #
-  #     x = Foo::Bar.subclass('Zap'){}
-  #     x.name # => Foo::Bar::Zap_1
-  #     x.superclass.name # => Foo::Bar
-  #
-  # Removed from RSpec after 1.1.something; reproduced here because much of the
-  # spec suite was already written with dynamic class creation.
   def subclass(base_name, &body)
     klass = Class.new(self)
     class_name = "#{self.name}_#{base_name}"
