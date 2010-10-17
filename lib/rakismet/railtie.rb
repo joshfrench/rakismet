@@ -10,5 +10,8 @@ module Rakismet
         Rakismet.url = app.config.rakismet.url
         Rakismet.host = app.config.rakismet.host
       end
+      initializer 'rakismet.add_middleware' do |app|
+        app.middleware.use Rakismet::Middleware
+      end
   end
 end

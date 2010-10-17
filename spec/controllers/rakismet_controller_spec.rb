@@ -12,7 +12,8 @@ end
 
 describe StubController do
   it "should add around_filter" do
-    StubController.filter_chain.map(&:method).should include(Rakismet::Filter)
+    StubController.should_receive(:around_filter).with(Rakismet::Filter)
+    StubController.send(:include, Rakismet::Controller)
   end
 end
 

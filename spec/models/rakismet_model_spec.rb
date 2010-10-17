@@ -7,7 +7,7 @@ end
 
 class StoredParams
   include Rakismet::Model
-  attr_accessor :user_ip, :user_agent, :referrer
+  attr_accessor :remote_ip, :user_agent, :referer
 end
 
 describe AkismetModel do
@@ -16,23 +16,23 @@ describe AkismetModel do
     @model = AkismetModel.new
     comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
   end
-  
+
   it "should have default mappings" do
     [:comment_type, :author, :author_email, :author_url, :content].each do |field|
       fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
       AkismetModel.akismet_attrs[fieldname].should eql(field)
      end
   end
-  
-  it "should have nil placeholders for optional binding variables" do
-    [:user_ip, :user_agent, :referrer].each do |field|
-      AkismetModel.akismet_attrs.should have_key(field)
+
+  it "should have request mappings" do
+    [:remote_ip, :user_agent, :referer].each do |field|
+      AkismetModel.akismet_attrs[field].should eql(field)
      end
   end
 
   mapped_params = { :comment_type => :type2, :author => :author2, :content => :content2,
                     :author_email => :author_email2, :author_url => :author_url2 }
-    
+
   describe override = AkismetModel.subclass('Override') { rakismet_attrs(mapped_params.dup) } do
     it "should override default mappings" do
       [:comment_type, :author, :author_url, :author_email, :content].each do |field|
@@ -42,37 +42,38 @@ describe AkismetModel do
     end
   end
 
-  extended_params = { :user_ip => :stored_ip, :user_agent => :stored_agent,
-                      :referrer => :stored_referrer }
+  extended_params = { :remote_ip => :stored_ip, :user_agent => :stored_agent,
+                      :referer => :stored_referrer }
 
   describe extended = AkismetModel.subclass('Extended') { rakismet_attrs(extended_params.dup) } do
-    
+
     before do
       @extended = extended.new
       attrs = comment_attrs(:stored_ip => '127.0.0.1', :stored_agent => 'RSpec', :stored_referrer => 'http://test.host/')
       attrs.each_pair { |k,v| @extended.stub!(k).and_return(v) }
+      Rakismet.stub(:request).and_return(empty_request)
     end
-    
+
     it "should extend optional mappings" do
-      [:user_ip, :user_agent, :referrer].each do |field|
+      [:remote_ip, :user_agent, :referer].each do |field|
         extended.akismet_attrs[field].should eql(extended_params[field])
       end
     end
-    
+
     describe ".spam!" do
       it "should use stored request vars if available" do
         Rakismet::Base.should_receive(:akismet_call).
-          with('submit-spam', akismet_attrs(:user_ip => '127.0.0.1', :user_agent => 'RSpec',
-                                            :referrer => 'http://test.host/'))
+          with('submit-spam', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
+                                            :referer => 'http://test.host/'))
         @extended.spam!
       end
     end
-    
+
     describe ".ham!" do
       it "should use stored request vars if available" do
         Rakismet::Base.should_receive(:akismet_call).
-          with('submit-ham', akismet_attrs(:user_ip => '127.0.0.1', :user_agent => 'RSpec',
-                                            :referrer => 'http://test.host/'))
+          with('submit-ham', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
+                                            :referer => 'http://test.host/'))
         @extended.ham!
       end
     end
@@ -123,19 +124,19 @@ describe AkismetModel do
   end
 
   describe ".spam?" do
-    
-    before do
-      Rakismet::Base.current_request = request
-    end
-    
-    it "should eval request variables in context of Base.rakismet_binding" do
+
+    it "should use request variables from Rakismet.request if absent in model" do
+      [:remote_ip, :user_agent, :referer].each do |field|
+        @model.should_not respond_to(:field)
+      end
+      Rakismet.stub!(:request).and_return(request)
       Rakismet::Base.should_receive(:akismet_call).
-                with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1', 
-                                                          :user_agent => 'RSpec', 
-                                                          :referrer => 'http://test.host/referrer'))
+                with('comment-check', akismet_attrs.merge(:remote_ip => '127.0.0.1',
+                                                          :user_agent => 'RSpec',
+                                                          :referer => 'http://test.host/referrer'))
       @model.spam?
     end
-    
+
     it "should cache result of #spam?" do
       Rakismet::Base.should_receive(:akismet_call).once
       @model.spam?
@@ -146,40 +147,40 @@ describe AkismetModel do
       Rakismet::Base.stub!(:akismet_call).and_return('true')
       @model.should be_spam
     end
-    
+
     it "should be false if comment is not spam" do
       Rakismet::Base.stub!(:akismet_call).and_return('false')
       @model.should_not be_spam
     end
-    
-    it "should set last_akismet_response" do
+
+    it "should set akismet_response" do
       Rakismet::Base.stub!(:akismet_call).and_return('response')
       @model.spam?
       @model.akismet_response.should eql('response')
     end
 
     it "should not throw an error if request vars are missing" do
-      Rakismet::Base.current_request = empty_request
+      Rakismet.stub!(:request).and_return(empty_request)
       lambda { @model.spam? }.should_not raise_error(NoMethodError)
     end
   end
-  
+
   describe StoredParams do
       before do
-        Rakismet::Base.current_request = nil
         @model = StoredParams.new
         comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
       end
 
-    it "should use local values if Rakismet binding is not present" do
-      @model.user_ip = '127.0.0.1'
-      @model.user_agent = 'RSpec'
-      @model.referrer = 'http://test.host/referrer'
+    it "should use local values even if Rakismet.request is populated" do
+      Rakismet.stub!(:request).and_return(request)
+      @model.remote_ip = '192.168.0.1'
+      @model.user_agent = 'Rakismet'
+      @model.referer = 'http://localhost/referrer'
 
       Rakismet::Base.should_receive(:akismet_call).
-                with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
-                                                          :user_agent => 'RSpec',
-                                                          :referrer => 'http://test.host/referrer'))
+                with('comment-check', akismet_attrs.merge(:remote_ip => '192.168.0.1',
+                                                          :user_agent => 'Rakismet',
+                                                          :referer => 'http://localhost/referrer'))
       @model.spam?
     end
   end
@@ -211,31 +212,31 @@ describe AkismetModel do
       @model.should_not be_spam
     end
   end
-  
+
   private
-  
+
     def comment_attrs(attrs={})
       { :comment_type => 'test', :author => 'Rails test',
         :author_email => 'test@test.host', :author_url => 'test.host',
         :content => 'comment content', :blog => Rakismet.url }.merge(attrs)
     end
-    
+
     def akismet_attrs(attrs={})
       { :comment_type => 'test', :comment_author_email => 'test@test.host',
         :comment_author => 'Rails test', :comment_author_url => 'test.host',
         :comment_content => 'comment content' }.merge(attrs)
     end
-    
-    def request
+
+    let(:request) {
       OpenStruct.new(:remote_ip => '127.0.0.1',
                      :user_agent => 'RSpec',
                      :referer => 'http://test.host/referrer')
-    end
+    }
 
-    def empty_request
+    let(:empty_request) {
       OpenStruct.new(:remote_ip => nil,
                      :user_agent => nil,
                      :referer => nil)
-    end
+    }
 
 end

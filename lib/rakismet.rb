@@ -1,16 +1,28 @@
 require 'net/http'
 require 'uri'
+require 'cgi'
 require 'yaml'
 
 require 'rakismet/model'
 require 'rakismet/filter'
 require 'rakismet/controller'
+require 'rakismet/middleware'
 
 require 'rakismet/railtie.rb' if defined?(Rails)
 
 module Rakismet
+  Request = Struct.new(:remote_ip, :user_agent, :referer)
+
   class << self
     attr_accessor :key, :url, :host
+
+    def request
+      @request ||= Request.new
+    end
+
+    def clear_request
+      @request = Request.new
+    end
   end
 
   def self.version
@@ -22,12 +34,12 @@ module Rakismet
 
 
   def self.headers
-    { 'User-Agent' => "Rails/#{Rails.version} | Rakismet/#{Rakismet.version}",
-      'Content-Type' => 'application/x-www-form-urlencoded' }
+    user_agent = "Rakismet/#{Rakismet.version}"
+    user_agent += " | Rails/#{Rails.version}" if defined?(Rails)
+    { 'User-Agent' => user_agent, 'Content-Type' => 'application/x-www-form-urlencoded' }
   end
 
   class Base
-    cattr_accessor :valid_key, :current_request
 
     class << self
       def validate_key
@@ -37,7 +49,7 @@ module Rakismet
           data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
           http.post(akismet.path, data, Rakismet.headers)
         end
-        self.valid_key = (valid == 'valid')
+        @@valid_key = (valid == 'valid')
       end
 
       def valid_key?
@@ -66,9 +78,9 @@ module Rakismet
         end
 
         def validate_constants
-          raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.blank?
-          raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.blank?
-          raise Undefined, "Rakismet.host is not defined" if Rakismet.host.blank?
+          raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.nil? || Rakismet.key.empty?
+          raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.nil? || Rakismet.url.empty?
+          raise Undefined, "Rakismet.host is not defined" if Rakismet.host.nil? || Rakismet.host.empty?
         end
     end
   end

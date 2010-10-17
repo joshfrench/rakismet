@@ -2,6 +2,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Rakismet::Base do
 
+  let(:http) { double(:http, :to_ary => [nil, 'akismet response']).as_null_object }
+
   after do
     Rakismet.key = 'dummy-key'
     Rakismet.url = 'test.localhost'
@@ -41,15 +43,14 @@ describe Rakismet::Base do
     it "should build url with host" do
       host = "api.antispam.typepad.com"
       Rakismet.host = host
-      Net::HTTP.should_receive(:start).with(host).and_yield(double(:http, :to_ary => [nil, 'response']).as_null_object)
+      Net::HTTP.should_receive(:start).with(host).and_yield(http)
       Rakismet::Base.validate_key
     end
   end
   
   describe ".akismet_call" do
     before do
-      @http = double(:http, :to_ary => [nil, 'akismet response']).as_null_object
-      Net::HTTP.stub(:start).and_yield(@http)
+      Net::HTTP.stub(:start).and_yield(http)
     end
     
     it "should build url with API key for the correct host" do
@@ -60,7 +61,7 @@ describe Rakismet::Base do
     end
     
     it "should post data to named function" do
-      @http.should_receive(:post).with('/1.1/bogus-function', %r(foo=#{CGI.escape 'escape//this'}), Rakismet.headers)
+      http.should_receive(:post).with('/1.1/bogus-function', %r(foo=#{CGI.escape 'escape//this'}), Rakismet.headers)
       Rakismet::Base.send(:akismet_call, 'bogus-function', { :foo => 'escape//this' })
     end
     
