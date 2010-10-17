@@ -52,7 +52,7 @@ module Rakismet
       private
 
         def akismet_data
-          self.class.akismet_attrs.keys.inject({}) do |data,attr|
+          akismet = self.class.akismet_attrs.keys.inject({}) do |data,attr|
             mapped_field = self.class.akismet_attrs[attr]
             data.merge attr =>  if mapped_field.is_a?(Proc)
                                   instance_eval(&mapped_field)
@@ -69,7 +69,10 @@ module Rakismet
                                 elsif Rakismet.request.respond_to?(attr)
                                   Rakismet.request.send(attr)
                                 end
-          end.delete_if { |k,v| v.nil? || v.empty? }
+          end
+          akismet.delete_if { |k,v| v.nil? || v.empty? }
+          akismet[:comment_type] ||= 'comment'
+          akismet
         end
     end
     

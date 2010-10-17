@@ -30,6 +30,10 @@ describe AkismetModel do
      end
   end
 
+  it "should populate comment type" do
+    @model.send(:akismet_data)[:comment_type].should == comment_attrs[:comment_type]
+  end
+
   mapped_params = { :comment_type => :type2, :author => :author2, :content => :content2,
                     :author_email => :author_email2, :author_url => :author_url2 }
 
