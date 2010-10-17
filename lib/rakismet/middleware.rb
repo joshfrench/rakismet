@@ -6,8 +6,9 @@ module Rakismet
     end
 
     def call(env)
-      # set Rakismet.request vars...
+      Rakismet.set_request_vars(env)
       @app.call(env)
+      Rakismet.clear_request
     end
 
   end

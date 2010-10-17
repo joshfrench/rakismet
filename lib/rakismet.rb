@@ -4,8 +4,6 @@ require 'cgi'
 require 'yaml'
 
 require 'rakismet/model'
-require 'rakismet/filter'
-require 'rakismet/controller'
 require 'rakismet/middleware'
 
 require 'rakismet/railtie.rb' if defined?(Rails)
@@ -18,6 +16,11 @@ module Rakismet
 
     def request
       @request ||= Request.new
+    end
+
+    def set_request_vars(env)
+      request.remote_ip, request.user_agent, request.referer =
+        env['REMOTE_IP'], env['USER_AGENT'], env['REFERER']
     end
 
     def clear_request
