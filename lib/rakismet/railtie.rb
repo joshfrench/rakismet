@@ -5,7 +5,7 @@ module Rakismet
   class Railtie < Rails::Railtie
       config.rakismet = ActiveSupport::OrderedOptions.new
       config.rakismet.host = 'rest.akismet.com'
-      initializer 'rakismet.get_config' do |app|
+      initializer 'rakismet.get_config', :after => :load_config_initializers do |app|
         Rakismet.key = app.config.rakismet.key
         Rakismet.url = app.config.rakismet.url
         Rakismet.host = app.config.rakismet.host
