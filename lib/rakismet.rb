@@ -43,7 +43,7 @@ module Rakismet
 
     class << self
       def validate_key
-        validate_constants
+        validate_config
         akismet = URI.parse(verify_url)
         _, valid = Net::HTTP.start(akismet.host) do |http|
           data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
@@ -57,7 +57,7 @@ module Rakismet
       end
 
       def akismet_call(function, args={})
-        validate_constants
+        validate_config
         args.merge!(:blog => Rakismet.url)
         akismet = URI.parse(call_url(function))
         _, response = Net::HTTP.start(akismet.host) do |http|
@@ -77,7 +77,7 @@ module Rakismet
           "http://#{Rakismet.key}.#{Rakismet.host}/1.1/#{function}"
         end
 
-        def validate_constants
+        def validate_config
           raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.nil? || Rakismet.key.empty?
           raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.nil? || Rakismet.url.empty?
           raise Undefined, "Rakismet.host is not defined" if Rakismet.host.nil? || Rakismet.host.empty?

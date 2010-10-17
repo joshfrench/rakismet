@@ -10,20 +10,20 @@ describe Rakismet::Base do
     Rakismet.host = 'endpoint.localhost'
   end
 
-  describe ".validate_constants" do
+  describe ".validate_config" do
     it "should raise an error if key is not found" do
       Rakismet.key = ''
-      lambda { Rakismet::Base.send(:validate_constants) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet::Base.send(:validate_config) }.should raise_error(Rakismet::Undefined)
     end
 
     it "should raise an error if url is not found" do
       Rakismet.url = ''
-      lambda { Rakismet::Base.send(:validate_constants) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet::Base.send(:validate_config) }.should raise_error(Rakismet::Undefined)
     end
 
     it "should raise an error if host is not found" do
       Rakismet.host = ''
-      lambda { Rakismet::Base.send(:validate_constants) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet::Base.send(:validate_config) }.should raise_error(Rakismet::Undefined)
     end
   end
   
