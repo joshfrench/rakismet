@@ -2,56 +2,34 @@ Rakismet
 ========
 
 **Akismet** (<http://akismet.com/>) is a collaborative spam filtering service.
-**Rakismet** is easy Akismet integration with your Rails app, including
-support for TypePad's AntiSpam service.
-
-
-Setup
-=====
-
-As a plugin
------------
-
-Install with `script/plugin install git://github.com/joshfrench/rakismet`
-
-Rakismet installation should have created a file called rakismet.rb in
-config/initializers. If not, you can copy the template from:
-vendor/plugins/rakismet/generators/rakismet/templates/config/initializers/rakismet.rb.
-
-As a gem
---------
-
-`gem install rakismet`
-
-In config/environment.rb, require the gem by adding `config.gem 'rakismet'`
-within the config block.
-
-From your app root, run `./script/generate rakismet` to create the Rakismet
-initializer.
+**Rakismet** is easy Akismet integration with Rails and rack apps. TypePad's
+AntiSpam service and generic Akismet endpoints are supported.
 
 Getting Started
 ===============
 
-Once you've installed Rakismet via your method of choice, you'll need an API 
-key from the folks at WordPress. Head on over to http://wordpress.com/api-keys/ 
-and sign up for a new username.
+Once you've installed the Rakismet gem and added it to your application's Gemfile,
+you'll need an API key from the folks at WordPress. Head on over to
+http://wordpress.com/api-keys/ and sign up for a new username.
 
-Edit config/initializers/rakismet.rb and fill in `Rakismet::URL` and
-`Rakismet::KEY` with the URL of your application and the key you received
-from WordPress.
+Configure the Rakismet key and the URL of your application by setting the following
+in an initializer or application.rb:
+
+    config.rakismet.key = 'your wordpress key'
+    config.rakismet.url = 'http://yourdomain.com/'
 
 If you wish to use another Akismet-compatible API provider such as TypePad's
-antispam service, you'll also need to change the `Rakismet::HOST` to your
-service provider's endpoint.
+antispam service, you'll also need to set `config.rakismet.host` to your service
+provider's endpoint.
 
-Rakismet::Model
----------------
+Adding Rakismet to Your Application
+-----------------------------------
 
 First, introduce Rakismet to your model:
 
     class Comment
-	  include Rakismet::Model
-	end
+      include Rakismet::Model
+    end
 
 Rakismet sends the following information to the spam-hungry robots at Akismet:
 
@@ -61,9 +39,9 @@ Rakismet sends the following information to the spam-hungry robots at Akismet:
     comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
     content       : the content submitted
     permalink     : the permanent URL for the entry the comment belongs to
-    user_ip       : IP address used to submit this comment
+    remote_ip     : IP address used to submit this comment
     user_agent    : user agent string
-    referrer      : http referer
+    referer       : http referer (note the HTTP-style spelling.)
 
 By default, Rakismet just looks for attributes or methods on your class that
 match these names. You don't have to have accessors that match these exactly,
@@ -85,48 +63,20 @@ Or you can pass in a proc, to access associations:
                      :author_email => proc { author.email }
     end
 
-Rakismet::Controller
---------------------
-Perhaps you want to check a comment's spam status at creation time, and you
-have no need to keep track of request-specific information such as the user's
-IP, user agent, or referrer.
-
-You can add Rakismet to a controller and the IP, user agent, and referrer will
-be taken from the current request instead of your model instance.
-
-    class MyController < ActionController::Base
-      include Rakismet::Controller
-	end
-
-Since you probably won't be checking for spam in every action, Rakismet takes
-`:only` and `:except` options just like other filters. You can reduce overhead
-by specifying just the appropriate actions:
-
-    class MyController < ActionController::Base
-      include Rakismet::Controller
-      rakismet_filter :only => :create
-    end
 
 Checking For Spam
-=================
+-----------------
 
 Rakismet provides three methods for interacting with Akismet:
 
  * `spam?`
 
-Simply call `@comment.spam?` to get a true/false response. True means it's spam, false means it's not. Well, usually; it's possible something went wrong
-and Akismet returned an error message. `@comment.spam?` will return false if
-this happens. You can check `@comment.akismet_response` to be certain;
-anything other than 'true' or 'false' means you got an error. That said, as
-long as you're collecting the data listed above it's probably sufficient to
-check `spam?` alone.
-
-Keep in mind that if you call `spam?` from within a controller action that
-uses the Rakismet filter, the user IP, user agent, and referrer will be taken
-from the current request regardless of what your model attributes are. In
-other words: if you're not verifying comments at the moment they're submitted,
-you probably want to store those attributes rather than rely on the controller
-methods.
+Simply call `@comment.spam?` to get a true/false response. True means it's spam,
+false means it's not. (In case of an error, `@comment.spam?` will also return
+false. If you want to make sure your Akismet requests are behaving properly,
+you can check `@comment.akismet_response`. Anything other than "true" or
+"false" means you got an error. But as long as you're collecting the data
+above, it's probably safe to rely on `@comment.spam?` alone.)
 
  * `ham!` and 
  * `spam!`
@@ -136,21 +86,31 @@ erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
 as a false positive. Likewise if they missed a spammy comment,
 `@comment.spam!` will resubmit marked as spam.
 
-Updating from Rakismet < 0.4
-----------------------------
-There were some significant changes to the API in version 0.4. This was done
-to make Rakismet easier to use with persistence layers other than
-ActiveRecord.
+Optional Request Variables
+--------------------------
 
-If you're updating from an older version, please note:
+Akismet wants certain information about the request environment: remote IP, the
+user agent string, and the HTTP referer when available. Normally, Rakismet
+asks your model for these. Storing this information on your model allows you to
+call the `spam?` method at a later time, e.g. you're putting your comments into
+an administrative queue or using a background job to process them.
 
- * Rakismet is no longer automatically injected into ActiveRecord and
-   ActionController. You'll need to manually include Rakismet with
-   `include Rakismet::Model` and `include Rakismet::Controller`.
- * `ActiveRecord::Base#has_rakismet` now becomes
-   `Rakismet::Model#rakismet_attrs`.
- * `ActionController::Base#has_rakismet` now becomes
-   `Rakismet::Controller#rakismet_filter`.
+You don't need to have these three attributes on your model, however. If you
+choose to omit them, Rakismet will instead look for a current request object
+and ask it for the values instead.
+
+This means that if you are **not storing request variables**, you must call
+`spam?` from within the controller action that handles comment submissions. That
+way the IP, user agent, and referer will belong to the person submitting the
+comment. If you were to call `spam?` at a later time, the request information would
+be invalid. 
+
+If you've decided to handle the request variables yourself and would like to
+disable the middleware responsible for inspecting each request, add this to your
+app initialization:
+
+    config.rakismet.use_middleware = false
+
 
 --------------------------------------------------------------
 Copyright (c) 2008 Josh French, released under the MIT license
