@@ -12,7 +12,7 @@ describe Rakismet::Middleware do
 
   it "should set set Rakismet.request variables" do
     Rakismet.stub(:request).and_return(request)
-    request.should_receive(:remote_ip=).with('127.0.0.1')
+    request.should_receive(:user_ip=).with('127.0.0.1')
     request.should_receive(:user_agent=).with('RSpec')
     request.should_receive(:referer=).with('http://test.host/referrer')
     @middleware.call(env)
@@ -20,7 +20,7 @@ describe Rakismet::Middleware do
 
   it "should clear Rakismet.request after request is complete" do
     @middleware.call(env)
-    Rakismet.request.remote_ip.should be_nil
+    Rakismet.request.user_ip.should be_nil
     Rakismet.request.user_agent.should be_nil
     Rakismet.request.referer.should be_nil
   end

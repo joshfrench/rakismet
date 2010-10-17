@@ -7,7 +7,7 @@ end
 
 class StoredParams
   include Rakismet::Model
-  attr_accessor :remote_ip, :user_agent, :referer
+  attr_accessor :user_ip, :user_agent, :referer
 end
 
 describe AkismetModel do
@@ -25,7 +25,7 @@ describe AkismetModel do
   end
 
   it "should have request mappings" do
-    [:remote_ip, :user_agent, :referer].each do |field|
+    [:user_ip, :user_agent, :referer].each do |field|
       AkismetModel.akismet_attrs[field].should eql(field)
      end
   end
@@ -42,7 +42,7 @@ describe AkismetModel do
     end
   end
 
-  extended_params = { :remote_ip => :stored_ip, :user_agent => :stored_agent,
+  extended_params = { :user_ip => :stored_ip, :user_agent => :stored_agent,
                       :referer => :stored_referrer }
 
   describe extended = AkismetModel.subclass('Extended') { rakismet_attrs(extended_params.dup) } do
@@ -55,7 +55,7 @@ describe AkismetModel do
     end
 
     it "should extend optional mappings" do
-      [:remote_ip, :user_agent, :referer].each do |field|
+      [:user_ip, :user_agent, :referer].each do |field|
         extended.akismet_attrs[field].should eql(extended_params[field])
       end
     end
@@ -63,7 +63,7 @@ describe AkismetModel do
     describe ".spam!" do
       it "should use stored request vars if available" do
         Rakismet.should_receive(:akismet_call).
-          with('submit-spam', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
+          with('submit-spam', akismet_attrs(:user_ip => '127.0.0.1', :user_agent => 'RSpec',
                                             :referer => 'http://test.host/'))
         @extended.spam!
       end
@@ -72,7 +72,7 @@ describe AkismetModel do
     describe ".ham!" do
       it "should use stored request vars if available" do
         Rakismet.should_receive(:akismet_call).
-          with('submit-ham', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
+          with('submit-ham', akismet_attrs(:user_ip => '127.0.0.1', :user_agent => 'RSpec',
                                             :referer => 'http://test.host/'))
         @extended.ham!
       end
@@ -126,12 +126,12 @@ describe AkismetModel do
   describe ".spam?" do
 
     it "should use request variables from Rakismet.request if absent in model" do
-      [:remote_ip, :user_agent, :referer].each do |field|
+      [:user_ip, :user_agent, :referer].each do |field|
         @model.should_not respond_to(:field)
       end
       Rakismet.stub!(:request).and_return(request)
       Rakismet.should_receive(:akismet_call).
-                with('comment-check', akismet_attrs.merge(:remote_ip => '127.0.0.1',
+                with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
                                                           :user_agent => 'RSpec',
                                                           :referer => 'http://test.host/referrer'))
       @model.spam?
@@ -173,12 +173,12 @@ describe AkismetModel do
 
     it "should use local values even if Rakismet.request is populated" do
       Rakismet.stub!(:request).and_return(request)
-      @model.remote_ip = '192.168.0.1'
+      @model.user_ip = '192.168.0.1'
       @model.user_agent = 'Rakismet'
       @model.referer = 'http://localhost/referrer'
 
       Rakismet.should_receive(:akismet_call).
-                with('comment-check', akismet_attrs.merge(:remote_ip => '192.168.0.1',
+                with('comment-check', akismet_attrs.merge(:user_ip => '192.168.0.1',
                                                           :user_agent => 'Rakismet',
                                                           :referer => 'http://localhost/referrer'))
       @model.spam?
@@ -228,13 +228,13 @@ describe AkismetModel do
     end
 
     let(:request) {
-      OpenStruct.new(:remote_ip => '127.0.0.1',
+      OpenStruct.new(:user_ip => '127.0.0.1',
                      :user_agent => 'RSpec',
                      :referer => 'http://test.host/referrer')
     }
 
     let(:empty_request) {
-      OpenStruct.new(:remote_ip => nil,
+      OpenStruct.new(:user_ip => nil,
                      :user_agent => nil,
                      :referer => nil)
     }
