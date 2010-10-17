@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Rakismet::Middleware do
 
-  let(:env) { { 'REMOTE_IP' => '127.0.0.1', 'USER_AGENT' => 'RSpec', 'REFERER' => 'http://test.host/referrer' } }
+  let(:env) { { 'REMOTE_ADDR' => '127.0.0.1', 'HTTP_USER_AGENT' => 'RSpec', 'HTTP_REFERER' => 'http://test.host/referrer' } }
   let(:app) { double(:app, :call => nil) }
   let(:request) { double(:request).as_null_object }
 

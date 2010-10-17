@@ -21,7 +21,7 @@ module Rakismet
 
     def set_request_vars(env)
       request.remote_ip, request.user_agent, request.referer =
-        env['REMOTE_IP'], env['USER_AGENT'], env['REFERER']
+        env['REMOTE_ADDR'], env['HTTP_USER_AGENT'], env['HTTP_REFERER']
     end
 
     def clear_request
