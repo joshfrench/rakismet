@@ -62,7 +62,7 @@ describe AkismetModel do
 
     describe ".spam!" do
       it "should use stored request vars if available" do
-        Rakismet::Base.should_receive(:akismet_call).
+        Rakismet.should_receive(:akismet_call).
           with('submit-spam', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
                                             :referer => 'http://test.host/'))
         @extended.spam!
@@ -71,7 +71,7 @@ describe AkismetModel do
 
     describe ".ham!" do
       it "should use stored request vars if available" do
-        Rakismet::Base.should_receive(:akismet_call).
+        Rakismet.should_receive(:akismet_call).
           with('submit-ham', akismet_attrs(:remote_ip => '127.0.0.1', :user_agent => 'RSpec',
                                             :referer => 'http://test.host/'))
         @extended.ham!
@@ -130,7 +130,7 @@ describe AkismetModel do
         @model.should_not respond_to(:field)
       end
       Rakismet.stub!(:request).and_return(request)
-      Rakismet::Base.should_receive(:akismet_call).
+      Rakismet.should_receive(:akismet_call).
                 with('comment-check', akismet_attrs.merge(:remote_ip => '127.0.0.1',
                                                           :user_agent => 'RSpec',
                                                           :referer => 'http://test.host/referrer'))
@@ -138,23 +138,23 @@ describe AkismetModel do
     end
 
     it "should cache result of #spam?" do
-      Rakismet::Base.should_receive(:akismet_call).once
+      Rakismet.should_receive(:akismet_call).once
       @model.spam?
       @model.spam?
     end
 
     it "should be true if comment is spam" do
-      Rakismet::Base.stub!(:akismet_call).and_return('true')
+      Rakismet.stub!(:akismet_call).and_return('true')
       @model.should be_spam
     end
 
     it "should be false if comment is not spam" do
-      Rakismet::Base.stub!(:akismet_call).and_return('false')
+      Rakismet.stub!(:akismet_call).and_return('false')
       @model.should_not be_spam
     end
 
     it "should set akismet_response" do
-      Rakismet::Base.stub!(:akismet_call).and_return('response')
+      Rakismet.stub!(:akismet_call).and_return('response')
       @model.spam?
       @model.akismet_response.should eql('response')
     end
@@ -177,7 +177,7 @@ describe AkismetModel do
       @model.user_agent = 'Rakismet'
       @model.referer = 'http://localhost/referrer'
 
-      Rakismet::Base.should_receive(:akismet_call).
+      Rakismet.should_receive(:akismet_call).
                 with('comment-check', akismet_attrs.merge(:remote_ip => '192.168.0.1',
                                                           :user_agent => 'Rakismet',
                                                           :referer => 'http://localhost/referrer'))
@@ -187,12 +187,12 @@ describe AkismetModel do
 
   describe ".spam!" do
     it "should call Base.akismet_call with submit-spam" do
-      Rakismet::Base.should_receive(:akismet_call).with('submit-spam', akismet_attrs)
+      Rakismet.should_receive(:akismet_call).with('submit-spam', akismet_attrs)
       @model.spam!
     end
 
     it "should mutate #spam?" do
-      Rakismet::Base.stub!(:akismet_call)
+      Rakismet.stub!(:akismet_call)
       @model.instance_variable_set(:@_spam, false)
       @model.spam!
       @model.should be_spam
@@ -201,12 +201,12 @@ describe AkismetModel do
 
   describe ".ham!" do
     it "should call Base.akismet_call with submit-ham" do
-      Rakismet::Base.should_receive(:akismet_call).with('submit-ham', akismet_attrs)
+      Rakismet.should_receive(:akismet_call).with('submit-ham', akismet_attrs)
       @model.ham!
     end
 
     it "should mutate #spam?" do
-      Rakismet::Base.stub!(:akismet_call)
+      Rakismet.stub!(:akismet_call)
       @model.instance_variable_set(:@_spam, true)
       @model.ham!
       @model.should_not be_spam

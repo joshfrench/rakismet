@@ -34,18 +34,18 @@ module Rakismet
           @_spam
         else
           data = akismet_data
-          self.akismet_response = Rakismet::Base.akismet_call('comment-check', data)
+          self.akismet_response = Rakismet.akismet_call('comment-check', data)
           @_spam = self.akismet_response == 'true'
         end
       end
 
       def spam!
-        Rakismet::Base.akismet_call('submit-spam', akismet_data)
+        Rakismet.akismet_call('submit-spam', akismet_data)
         @_spam = true
       end
 
       def ham!
-        Rakismet::Base.akismet_call('submit-ham', akismet_data)
+        Rakismet.akismet_call('submit-ham', akismet_data)
         @_spam = false
       end
 
