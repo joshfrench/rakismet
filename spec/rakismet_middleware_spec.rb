@@ -14,7 +14,7 @@ describe Rakismet::Middleware do
     Rakismet.stub(:request).and_return(request)
     request.should_receive(:user_ip=).with('127.0.0.1')
     request.should_receive(:user_agent=).with('RSpec')
-    request.should_receive(:referer=).with('http://test.host/referrer')
+    request.should_receive(:referrer=).with('http://test.host/referrer')
     @middleware.call(env)
   end
 
@@ -22,6 +22,6 @@ describe Rakismet::Middleware do
     @middleware.call(env)
     Rakismet.request.user_ip.should be_nil
     Rakismet.request.user_agent.should be_nil
-    Rakismet.request.referer.should be_nil
+    Rakismet.request.referrer.should be_nil
   end
 end

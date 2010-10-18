@@ -9,7 +9,7 @@ require 'rakismet/middleware'
 require 'rakismet/railtie.rb' if defined?(Rails)
 
 module Rakismet
-  Request = Struct.new(:user_ip, :user_agent, :referer)
+  Request = Struct.new(:user_ip, :user_agent, :referrer)
   Undefined = Class.new(NameError)
 
   class << self
@@ -20,7 +20,7 @@ module Rakismet
     end
 
     def set_request_vars(env)
-      request.user_ip, request.user_agent, request.referer =
+      request.user_ip, request.user_agent, request.referrer =
         env['REMOTE_ADDR'], env['HTTP_USER_AGENT'], env['HTTP_REFERER']
     end
 
