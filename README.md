@@ -36,12 +36,13 @@ Rakismet sends the following information to the spam-hungry robots at Akismet:
     author        : name submitted with the comment
     author_url    : URL submitted with the comment
     author_email  : email submitted with the comment
-    comment_type  : 'comment', 'trackback', 'pingback', or whatever you fancy
+    comment_type  : Defaults to comment but you can set it to trackback,
+                    pingback, or something more appropriate
     content       : the content submitted
     permalink     : the permanent URL for the entry the comment belongs to
-    remote_ip     : IP address used to submit this comment
+    user_ip       : IP address used to submit this comment
     user_agent    : user agent string
-    referer       : http referer (note the HTTP-style spelling.)
+    referrer      : referring URL (note the spelling)
 
 By default, Rakismet just looks for attributes or methods on your class that
 match these names. You don't have to have accessors that match these exactly,
@@ -62,7 +63,6 @@ Or you can pass in a proc, to access associations:
       rakismet_attrs :author => proc { author.name },
                      :author_email => proc { author.email }
     end
-
 
 Checking For Spam
 -----------------
@@ -92,18 +92,18 @@ Optional Request Variables
 Akismet wants certain information about the request environment: remote IP, the
 user agent string, and the HTTP referer when available. Normally, Rakismet
 asks your model for these. Storing this information on your model allows you to
-call the `spam?` method at a later time, e.g. you're putting your comments into
-an administrative queue or using a background job to process them.
+call the `spam?` method at a later time, e.g. your comments are in an
+administrative queue or you're using a background job to process them.
 
 You don't need to have these three attributes on your model, however. If you
-choose to omit them, Rakismet will instead look for a current request object
-and ask it for the values instead.
+choose to omit them, Rakismet will instead look at the current request (if one
+exists) and ask it for the values instead.
 
 This means that if you are **not storing request variables**, you must call
 `spam?` from within the controller action that handles comment submissions. That
 way the IP, user agent, and referer will belong to the person submitting the
 comment. If you were to call `spam?` at a later time, the request information would
-be invalid. 
+be missing or invalid. 
 
 If you've decided to handle the request variables yourself and would like to
 disable the middleware responsible for inspecting each request, add this to your
@@ -111,6 +111,48 @@ app initialization:
 
     config.rakismet.use_middleware = false
 
+FAQ
+===
 
---------------------------------------------------------------
+Akismet thinks all of my test data is spam!
+-------------------------------------------
+
+Akismet needs enough information to decide if your test data is spam or not.
+Try to supply as much as possible, especially the author name and request
+variables.
+
+How can I simulate a spam submission?
+-------------------------------------
+
+Most people have the opposite problem, where Akismet doesn't think anything is
+spam. The only guaranteed way to trigger a positive spam response is to set the
+comment author to "viagra-test-123".
+
+If you've done this and `spam?` is still returning false, you're probably
+missing the user IP or one of the key/url config variables. One way to check is
+to call `@comment.akismet_response`. If you are missing a required field or
+something else went wrong, this will hold the error message returned by
+Akismet. If your comment was processed normally, this value will simply be
+"true" or "false".
+
+Can I use Rakismet with a different ORM or framework?
+-----------------------------------------------------
+
+Sure. Rakismet doesn't care what your persistence layer is. It will work with
+Datamapper, a NoSQL store, or whatever next month's DB flavor is.
+
+Rakismet also has no dependencies on Rails or any of its components, and only uses
+a small Rack middleware object to do some of its magic. Depending on your
+framework, you may have to modify this slightly and/or manually place it in your
+stack.
+
+You'll also need to set a few config variables by hand. Instead of
+`config.rakismet.key`, `config.rakismet.url`, and `config.rakismet.host`, set
+these values directly with `Rakismet.key`, `Rakismet.url`, and `Rakismet.host`.
+
+---------------------------------------------------------------------------
+
+If you have any implementation or usage questions, don't hesitate to get in
+touch with me: josh@vitamin-j.com.
+
 Copyright (c) 2008 Josh French, released under the MIT license
