@@ -36,8 +36,7 @@ Rakismet sends the following information to the spam-hungry robots at Akismet:
     author        : name submitted with the comment
     author_url    : URL submitted with the comment
     author_email  : email submitted with the comment
-    comment_type  : Defaults to comment but you can set it to trackback,
-                    pingback, or something more appropriate
+    comment_type  : Defaults to comment but you can set it to trackback, pingback, or something more appropriate
     content       : the content submitted
     permalink     : the permanent URL for the entry the comment belongs to
     user_ip       : IP address used to submit this comment
