@@ -113,8 +113,8 @@ app initialization:
 FAQ
 ===
 
-Akismet thinks all of my test data is spam!
--------------------------------------------
+Why does Akismet think all of my test data is spam?
+---------------------------------------------------
 
 Akismet needs enough information to decide if your test data is spam or not.
 Try to supply as much as possible, especially the author name and request
@@ -132,7 +132,7 @@ missing the user IP or one of the key/url config variables. One way to check is
 to call `@comment.akismet_response`. If you are missing a required field or
 something else went wrong, this will hold the error message returned by
 Akismet. If your comment was processed normally, this value will simply be
-"true" or "false".
+`true` or `false`.
 
 Can I use Rakismet with a different ORM or framework?
 -----------------------------------------------------
