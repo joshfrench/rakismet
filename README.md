@@ -5,6 +5,12 @@ Rakismet
 **Rakismet** is easy Akismet integration with Rails and rack apps. TypePad's
 AntiSpam service and generic Akismet endpoints are supported.
 
+Compatibility
+=============
+
+**Rakismet 1.0.0** works with Rails 3 and other Rack-based frameworks.
+**Rakismet 0.4.2** is compatible with Rails 2.
+
 Getting Started
 ===============
 
@@ -22,14 +28,34 @@ If you wish to use another Akismet-compatible API provider such as TypePad's
 antispam service, you'll also need to set `config.rakismet.host` to your service
 provider's endpoint.
 
-Adding Rakismet to Your Application
------------------------------------
+Checking For Spam
+-----------------
 
 First, introduce Rakismet to your model:
 
     class Comment
       include Rakismet::Model
     end
+
+With Rakismet mixed in to your model, you'll get three methods for interacting with
+Akismet:
+
+ * `spam?`
+
+Simply call `@comment.spam?` to get a true/false response. True means it's spam,
+false means it's not.
+
+ * `ham!` and
+ * `spam!`
+
+Akismet works best with your feedback. If you spot a comment that was
+erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
+as a false positive. Likewise if they missed a spammy comment,
+`@comment.spam!` will resubmit marked as spam.
+
+
+Configuring Your Model
+----------------------
 
 Rakismet sends the following information to the spam-hungry robots at Akismet:
 
@@ -63,27 +89,12 @@ Or you can pass in a proc, to access associations:
                      :author_email => proc { author.email }
     end
 
-Checking For Spam
------------------
+You can even hard-code specific fields:
 
-Rakismet provides three methods for interacting with Akismet:
-
- * `spam?`
-
-Simply call `@comment.spam?` to get a true/false response. True means it's spam,
-false means it's not. (In case of an error, `@comment.spam?` will also return
-false. If you want to make sure your Akismet requests are behaving properly,
-you can check `@comment.akismet_response`. Anything other than "true" or
-"false" means you got an error. But as long as you're collecting the data
-above, it's probably safe to rely on `@comment.spam?` alone.)
-
- * `ham!` and 
- * `spam!`
-
-Akismet works best with your feedback. If you spot a comment that was
-erroneously marked as spam, `@comment.ham!` will resubmit to Akismet, marked
-as a false positive. Likewise if they missed a spammy comment,
-`@comment.spam!` will resubmit marked as spam.
+    class Trackback
+      include Rakismet::Model
+      rakismet_attrs :comment_type => "trackback"
+    end
 
 Optional Request Variables
 --------------------------
@@ -91,24 +102,37 @@ Optional Request Variables
 Akismet wants certain information about the request environment: remote IP, the
 user agent string, and the HTTP referer when available. Normally, Rakismet
 asks your model for these. Storing this information on your model allows you to
-call the `spam?` method at a later time, e.g. your comments are in an
-administrative queue or you're using a background job to process them.
+call the `spam?` method at a later time. For instance, maybe you're storing your
+comments in an administrative queue or processing them with a background job.
 
 You don't need to have these three attributes on your model, however. If you
 choose to omit them, Rakismet will instead look at the current request (if one
-exists) and ask it for the values instead.
+exists) and take the values from the request object instead.
 
-This means that if you are **not storing request variables**, you must call
+This means that if you are **not storing the request variables**, you must call
 `spam?` from within the controller action that handles comment submissions. That
 way the IP, user agent, and referer will belong to the person submitting the
-comment. If you were to call `spam?` at a later time, the request information would
-be missing or invalid. 
+comment. If you're not storing the request variables and you call `spam?` at a later
+time, the request information will be missing or invalid and Akismet won't be
+able to do its job properly.
 
-If you've decided to handle the request variables yourself and would like to
-disable the middleware responsible for inspecting each request, add this to your
-app initialization:
+If you've decided to handle the request variables yourself, you can add this to your
+app initialization to disable the middleware responsible for tracking the request
+information:
 
     config.rakismet.use_middleware = false
+
+Verifying Responses
+-------------------
+
+If you want to see what's happening behind the scenes, after you call one of
+`@comment.spam?`, `@comment.spam!` or `@comment.ham!` you can check
+`@comment.akismet_response`.
+
+This will contain the last response from the Akismet server. In the case of `spam?`
+it should be `true` or `false.` For `spam!` and `ham!` it should be `Feedback received.`
+If Akismet returned an error instead (e.g. if you left out some required information)
+this will contain the error message.
 
 FAQ
 ===
@@ -130,9 +154,8 @@ comment author to "viagra-test-123".
 If you've done this and `spam?` is still returning false, you're probably
 missing the user IP or one of the key/url config variables. One way to check is
 to call `@comment.akismet_response`. If you are missing a required field or
-something else went wrong, this will hold the error message returned by
-Akismet. If your comment was processed normally, this value will simply be
-`true` or `false`.
+there was another error, this will hold the Akismet error message. If your comment
+was processed normally, this value will simply be `true` or `false`.
 
 Can I use Rakismet with a different ORM or framework?
 -----------------------------------------------------
@@ -152,6 +175,6 @@ these values directly with `Rakismet.key`, `Rakismet.url`, and `Rakismet.host`.
 ---------------------------------------------------------------------------
 
 If you have any implementation or usage questions, don't hesitate to get in
-touch with me: josh@vitamin-j.com.
+touch: josh@vitamin-j.com.
 
 Copyright (c) 2008 Josh French, released under the MIT license
