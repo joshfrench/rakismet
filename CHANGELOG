@@ -1,3 +1,9 @@
+= 1.0.1
+* Fix hash access for Ruby 1.9 [Alex Crichton]
+= 1.0.0
+* Update for Rails 3
+* Remove filters and replace with middleware
+* Remove initializers and replace with Railtie
 = 0.4.0
 * Rakismet is no longer injected into ActiveRecord or ActionController
 * API changes to support newly decoupled modules
