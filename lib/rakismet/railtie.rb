@@ -12,6 +12,8 @@ module Rakismet
         Rakismet.key = app.config.rakismet[:key]
         Rakismet.url = app.config.rakismet[:url]
         Rakismet.host = app.config.rakismet[:host]
+        Rakismet.proxy_host = app.config.rakismet[:proxy_host]
+        Rakismet.proxy_port = app.config.rakismet[:proxy_port]
         app.middleware.use Rakismet::Middleware if app.config.rakismet.use_middleware
       end
 

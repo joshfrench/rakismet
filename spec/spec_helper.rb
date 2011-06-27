@@ -1,4 +1,4 @@
-require File.expand_path "../lib/rakismet"
+require File.expand_path "lib/rakismet"
 
 RSpec.configure do |config|
   config.mock_with :rspec
