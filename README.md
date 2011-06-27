@@ -23,10 +23,16 @@ in an initializer or application.rb:
 
     config.rakismet.key = 'your wordpress key'
     config.rakismet.url = 'http://yourdomain.com/'
-
+    
 If you wish to use another Akismet-compatible API provider such as TypePad's
 antispam service, you'll also need to set `config.rakismet.host` to your service
 provider's endpoint.
+
+If you want to use a proxy to access akismet (i.e your application is behind a firewall),
+set the proxy_host and proxy_port option.
+
+    config.rakismet.proxy_host = 'http://yourdomain.com/'
+    config.rakismet.proxy_port = '8080'
 
 Checking For Spam
 -----------------
