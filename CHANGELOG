@@ -1,3 +1,5 @@
+= 1.1.0
+* Add HTTP Proxy support [Francisco Trindade]
 = 1.0.1
 * Fix hash access for Ruby 1.9 [Alex Crichton]
 = 1.0.0
