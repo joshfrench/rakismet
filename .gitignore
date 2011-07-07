@@ -7,3 +7,4 @@ tmtags
 coverage
 rdoc
 pkg
+Gemfile.lock

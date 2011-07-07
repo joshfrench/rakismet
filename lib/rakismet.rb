@@ -28,16 +28,9 @@ module Rakismet
       @request = Request.new
     end
 
-    def version
-      @version ||= begin
-        version = YAML.load_file(File.join(File.dirname(__FILE__), %w(.. VERSION.yml)))
-        [version[:major], version[:minor], version[:patch]].join('.')
-      end
-    end
-
     def headers
       @headers ||= begin
-        user_agent = "Rakismet/#{Rakismet.version}"
+        user_agent = "Rakismet/#{Rakismet::VERSION}"
         user_agent = "Rails/#{Rails.version} | " + user_agent if defined?(Rails)
         { 'User-Agent' => user_agent, 'Content-Type' => 'application/x-www-form-urlencoded' }
       end
