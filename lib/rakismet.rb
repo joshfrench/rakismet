@@ -55,7 +55,7 @@ module Rakismet
       args.merge!(:blog => Rakismet.url)
       akismet = URI.parse(call_url(function))
       _, response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
-        data = args.map { |k,v| "#{k}=#{CGI.escape(v.to_s)}" }.join('&')
+        data = args.map { |k,v| "#{k}=#{CGI.escape(v.to_str)}" }.join('&')
         http.post(akismet.path, data, Rakismet.headers)
       end
       response
