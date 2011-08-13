@@ -8,3 +8,4 @@ coverage
 rdoc
 pkg
 Gemfile.lock
+.bundle
