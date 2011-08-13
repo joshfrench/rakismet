@@ -8,14 +8,15 @@ AntiSpam service and generic Akismet endpoints are supported.
 Compatibility
 =============
 
-**Rakismet 1.0.0** works with Rails 3 and other Rack-based frameworks.
-**Rakismet 0.4.2** is compatible with Rails 2.
+**Rakismet >= 1.0.0** work with Rails 3 and other Rack-based frameworks.
+
+**Rakismet <= 0.4.2** is compatible with Rails 2.
 
 Getting Started
 ===============
 
 Once you've installed the Rakismet gem and added it to your application's Gemfile,
-you'll need an API key. Head on over to http://akismet.com/wordpress/ and sign up 
+you'll need an API key. Head on over to http://akismet.com/signup/ and sign up
 for a new username.
 
 Configure the Rakismet key and the URL of your application by setting the following
@@ -30,8 +31,8 @@ If you wish to use another Akismet-compatible API provider such as TypePad's
 antispam service, you'll also need to set `config.rakismet.host` to your service
 provider's endpoint.
 
-If you want to use a proxy to access akismet (i.e your application is behind a firewall),
-set the proxy_host and proxy_port option.
+If you want to use a proxy to access akismet (i.e. your application is behind a
+firewall), set the proxy_host and proxy_port option.
 
 ```ruby
 config.rakismet.proxy_host = 'http://yourdomain.com/'
@@ -49,12 +50,17 @@ class Comment
 end
 ```
 
-With Rakismet mixed in to your model, you'll get three methods for interacting with
+With Rakismet mixed in to your model, you'll get three instance methods for interacting with
 Akismet:
 
- * `spam?` returns true if it's spam, false if it's not.
- * `ham!` submits comment that Akismet erroneously marked as spam, marked as a false positive.
- * `spam!` submits a comment that Akismet didn't think was spam.
+ * `spam?` submits the comment to Akismet and returns true if Akismet thinks the comment is spam, false if not.
+ * `ham!` resubmits a valid comment that Akismet erroneously marked as spam (marks it as a false positive.)
+ * `spam!` resubmits a spammy comment that Akismet missed (marks it as a false negative.)
+
+The `ham!` and `spam!` methods will change the value of `spam?` but their
+primary purpose is to send feedback to Akismet. The service works best when you
+help correct the rare mistake; please consider using these methods if you're
+moderating comments or otherwise reviewing the Akismet responses.
 
 Configuring Your Model
 ----------------------
@@ -119,13 +125,13 @@ exists) and take the values from the request object instead.
 This means that if you are **not storing the request variables**, you must call
 `spam?` from within the controller action that handles comment submissions. That
 way the IP, user agent, and referer will belong to the person submitting the
-comment. If you're not storing the request variables and you call `spam?` at a later
-time, the request information will be missing or invalid and Akismet won't be
-able to do its job properly.
+comment. If you're not storing the request variables and you call `spam?` at a
+later time, the request information will be missing or invalid and Akismet won't
+be able to do its job properly.
 
-If you've decided to handle the request variables yourself, you can add this to your
-app initialization to disable the middleware responsible for tracking the request
-information:
+If you've decided to handle the request variables yourself, you can disable the
+middleware responsible for tracking the request information by adding this to
+your app initialization:
 
 ```ruby
 config.rakismet.use_middleware = false
@@ -138,10 +144,10 @@ If you want to see what's happening behind the scenes, after you call one of
 `@comment.spam?`, `@comment.spam!` or `@comment.ham!` you can check
 `@comment.akismet_response`.
 
-This will contain the last response from the Akismet server. In the case of `spam?`
-it should be `true` or `false.` For `spam!` and `ham!` it should be `Feedback received.`
-If Akismet returned an error instead (e.g. if you left out some required information)
-this will contain the error message.
+This will contain the last response from the Akismet server. In the case of
+`spam?` it should be `true` or `false.` For `spam!` and `ham!` it should be
+`Feedback received.` If Akismet returned an error instead (e.g. if you left out
+some required information) this will contain the error message.
 
 FAQ
 ===
@@ -172,8 +178,8 @@ Can I use Rakismet with a different ORM or framework?
 Sure. Rakismet doesn't care what your persistence layer is. It will work with
 Datamapper, a NoSQL store, or whatever next month's DB flavor is.
 
-Rakismet also has no dependencies on Rails or any of its components, and only uses
-a small Rack middleware object to do some of its magic. Depending on your
+Rakismet also has no dependencies on Rails or any of its components, and only
+uses a small Rack middleware object to do some of its magic. Depending on your
 framework, you may have to modify this slightly and/or manually place it in your
 stack.
 

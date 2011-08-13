@@ -1,3 +1,7 @@
+= 1.1.1
+* Fix SafeBuffer error under Rails 3.0.8 and 3.0.9 [Brandon Ferguson]
+* Readme cleanup [Zeke Sikelianos]
+* Drop Jeweler in favor of Bundler's gem tasks
 = 1.1.0
 * Add HTTP Proxy support [Francisco Trindade]
 = 1.0.1
