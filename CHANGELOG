@@ -1,3 +1,5 @@
+= 1.1.2
+* Explicitly load version
 = 1.1.1
 * Fix SafeBuffer error under Rails 3.0.8 and 3.0.9 [Brandon Ferguson]
 * Readme cleanup [Zeke Sikelianos]
