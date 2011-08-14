@@ -5,7 +5,7 @@ require 'yaml'
 
 require 'rakismet/model'
 require 'rakismet/middleware'
-
+require 'rakismet/version'
 require 'rakismet/railtie.rb' if defined?(Rails)
 
 module Rakismet
