@@ -1,6 +1,6 @@
 module Rakismet
   module Model
-   
+
     def self.included(base)
       base.class_eval do
         attr_accessor :akismet_response
@@ -10,7 +10,7 @@ module Rakismet
         self.rakismet_attrs
       end
     end
-   
+
     module ClassMethods
       def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
@@ -27,7 +27,7 @@ module Rakismet
         end
       end
     end
-    
+
     module InstanceMethods
       def spam?
         if instance_variable_defined? :@_spam
@@ -75,6 +75,6 @@ module Rakismet
           akismet
         end
     end
-    
+
   end
 end
