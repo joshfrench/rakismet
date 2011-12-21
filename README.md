@@ -20,13 +20,20 @@ you'll need an API key. Head on over to http://akismet.com/signup/ and sign up
 for a new username.
 
 Configure the Rakismet key and the URL of your application by setting the following
-in an initializer or application.rb:
+in application.rb:
 
 ```ruby
 config.rakismet.key = 'your wordpress key'
 config.rakismet.url = 'http://yourdomain.com/'
 ```
-    
+
+or an initializer, for example `config/initializers/rakismet.rb`:
+
+```ruby
+YourApp::Application.config.rakismet.key = 'your wordpress key'
+YourApp::Application.config.rakismet.url = 'http://yourdomain.com/'
+```
+
 If you wish to use another Akismet-compatible API provider such as TypePad's
 antispam service, you'll also need to set `config.rakismet.host` to your service
 provider's endpoint.
