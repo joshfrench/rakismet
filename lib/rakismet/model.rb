@@ -26,6 +26,11 @@ module Rakismet
           self.akismet_attrs[f] = v
         end
       end
+
+      def inherited(subclass)
+        super
+        subclass.rakismet_attrs akismet_attrs.dup
+      end
     end
     
     module InstanceMethods
