@@ -1,3 +1,5 @@
+= 1.2.1
+* Fix deprecated usage of HTTPResponse for Ruby 1.9.3 [Leonid Shevtsov]
 = 1.2.0
 * Rakismet attribute mappings are now inheritable
 = 1.1.2
