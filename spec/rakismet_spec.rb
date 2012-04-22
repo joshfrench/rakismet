@@ -2,7 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Rakismet do
 
-  let(:http) { double(:http, :to_ary => [nil, 'akismet response']).as_null_object }
+  def mock_response(body)
+    double(:response, :body => body)
+  end
+  let(:http) { double(:http, :post => mock_response('akismet response')) }
 
   after do
     Rakismet.key = 'dummy-key'
@@ -43,19 +46,19 @@ describe Rakismet do
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub!(:start).and_return([nil, 'valid'])
+      @proxy.stub!(:start).and_return(mock_response('valid'))
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.validate_key
     end
     
     it "should set @@valid_key = true if key is valid" do
-      @proxy.stub!(:start).and_return([nil, 'valid'])
+      @proxy.stub!(:start).and_return(mock_response('valid'))
       Rakismet.validate_key
       Rakismet.valid_key?.should be_true
     end
 
     it "should set @@valid_key = false if key is invalid" do
-      @proxy.stub!(:start).and_return([nil, 'invalid'])
+      @proxy.stub!(:start).and_return(mock_response('invalid'))
       Rakismet.validate_key
       Rakismet.valid_key?.should be_false
     end
@@ -78,7 +81,7 @@ describe Rakismet do
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub!(:start).and_return([nil, 'valid'])
+      @proxy.stub!(:start).and_return(mock_response('valid'))
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.send(:akismet_call, 'bogus-function')
     end
