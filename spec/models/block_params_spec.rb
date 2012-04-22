@@ -15,7 +15,6 @@ describe BlockAkismetModel do
   end
 
   it "should accept a block" do
-    puts BlockAkismetModel.akismet_attrs.inspect
     BlockAkismetModel.akismet_attrs[:comment_author].should eql(PROC)
   end
 
