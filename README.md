@@ -24,14 +24,14 @@ in application.rb:
 
 ```ruby
 config.rakismet.key = 'your wordpress key'
-config.rakismet.url = 'http://yourdomain.com/'
+config.rakismet.url = 'http://example.com/'
 ```
 
 or an initializer, for example `config/initializers/rakismet.rb`:
 
 ```ruby
 YourApp::Application.config.rakismet.key = 'your wordpress key'
-YourApp::Application.config.rakismet.url = 'http://yourdomain.com/'
+YourApp::Application.config.rakismet.url = 'http://example.com/'
 ```
 
 If you wish to use another Akismet-compatible API provider such as TypePad's
@@ -42,7 +42,7 @@ If you want to use a proxy to access akismet (i.e. your application is behind a
 firewall), set the proxy_host and proxy_port option.
 
 ```ruby
-config.rakismet.proxy_host = 'http://yourdomain.com/'
+config.rakismet.proxy_host = 'http://example.com/'
 config.rakismet.proxy_port = '8080'
 ```
 
