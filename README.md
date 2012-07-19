@@ -144,6 +144,33 @@ your app initialization:
 config.rakismet.use_middleware = false
 ```
 
+Testing
+-------
+
+Rakismet can be configued to tell Akismet that it should operate in test mode -
+so Akismet will not change its behavior based on any test API calls, meaning
+they will have no training effect. That means your tests can be somewhat
+repeatable in the sense that one test won't influence subsequent calls.
+
+You can configure Rakismet for test mode via application.rb:
+
+```ruby
+config.rakismet.test = false # <- default
+config.rakismet.test = true
+```
+
+Or via an initializer:
+
+```ruby
+YourApp::Application.config.rakismet.test = false # <- default
+YourApp::Application.config.rakismet.test = true
+```
+
+**NOTE**: When running in Rails, Rakismet will run in test mode when your Rails
+environment is `test` or `development`, unless explictly configured otherwise.
+Outside of Rails Rakismet defaults to test mode turned **off**.
+
+
 Verifying Responses
 -------------------
 
