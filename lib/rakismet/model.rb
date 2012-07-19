@@ -1,6 +1,6 @@
 module Rakismet
   module Model
-   
+
     def self.included(base)
       base.class_eval do
         attr_accessor :akismet_response
@@ -10,11 +10,11 @@ module Rakismet
         self.rakismet_attrs
       end
     end
-   
+
     module ClassMethods
       def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
-        [:comment_type, :author, :author_url, :author_email, :content].each do |field|
+        [:comment_type, :author, :author_url, :author_email, :content, :user_role].each do |field|
           # clunky, but throwing around +type+ will break your heart
           fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
           self.akismet_attrs[fieldname] = args.delete(field) || field
@@ -32,7 +32,7 @@ module Rakismet
         subclass.rakismet_attrs akismet_attrs.dup
       end
     end
-    
+
     module InstanceMethods
       def spam?
         if instance_variable_defined? :@_spam
@@ -64,7 +64,8 @@ module Rakismet
                                 elsif !mapped_field.nil? && respond_to?(mapped_field)
                                   send(mapped_field)
                                 elsif not [:comment_type, :author, :author_email,
-                                        :author_url, :content, :user_ip, :referrer,
+                                        :author_url, :content, :user_role,
+                                        :user_ip, :referrer,
                                         :user_agent].include?(mapped_field)
                                   # we've excluded any fields that appear to
                                   # have their default unmapped values
@@ -80,6 +81,6 @@ module Rakismet
           akismet
         end
     end
-    
+
   end
 end
