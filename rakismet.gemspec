@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "rakismet/version"
+require File.expand_path('../lib/rakismet/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = "rakismet"
