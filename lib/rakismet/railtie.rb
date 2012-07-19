@@ -14,6 +14,7 @@ module Rakismet
         Rakismet.host = app.config.rakismet[:host]
         Rakismet.proxy_host = app.config.rakismet[:proxy_host]
         Rakismet.proxy_port = app.config.rakismet[:proxy_port]
+        Rakismet.test = app.config.rakismet.fetch(:test) { Rails.env.test? || Rails.env.development? }
         app.middleware.use Rakismet::Middleware if app.config.rakismet.use_middleware
       end
 
