@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require  'spec_helper'
 
 MAPPED_PARAMS = { :comment_type => :type2, :author => :author2, :content => :content2,
                   :author_email => :author_email2, :author_url => :author_url2 }

@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "rakismet/version"
+require File.expand_path('../lib/rakismet/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = "rakismet"
@@ -14,6 +13,8 @@ Gem::Specification.new do |s|
   s.date = "2012-04-22"
 
   s.rubyforge_project = "rakismet"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "rspec", "~> 2.11"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
