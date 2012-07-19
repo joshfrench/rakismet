@@ -7,7 +7,7 @@ describe Rakismet do
   end
   let(:http) { double(:http, :post => mock_response('akismet response')) }
 
-  after do
+  before do
     Rakismet.key = 'dummy-key'
     Rakismet.url = 'test.localhost'
     Rakismet.host = 'endpoint.localhost'
@@ -97,7 +97,18 @@ describe Rakismet do
       http.should_receive(:post).with('/1.1/bogus-function', %r(foo=#{CGI.escape 'escape//this'}), Rakismet.headers)
       Rakismet.send(:akismet_call, 'bogus-function', { :foo => 'escape//this' })
     end
-    
+
+    it "should default to not being in test mode" do
+      http.should_receive(:post).with(anything, %r(is_test=0), anything)
+      Rakismet.send(:akismet_call, 'bogus-function')
+    end
+
+    it "should be in test mode when configured" do
+      Rakismet.test = true
+      http.should_receive(:post).with(anything, %r(is_test=1), anything)
+      Rakismet.send(:akismet_call, 'bogus-function')
+    end
+
     it "should return response.body" do
       Rakismet.send(:akismet_call, 'bogus-function').should eql('akismet response')
     end
