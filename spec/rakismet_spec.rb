@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require 'spec_helper'
 
 describe Rakismet do
 
@@ -12,7 +12,7 @@ describe Rakismet do
     Rakismet.url = 'test.localhost'
     Rakismet.host = 'endpoint.localhost'
   end
-  
+
   describe "proxy host" do
     it "should have proxy host and port as nil by default" do
       Rakismet.proxy_host.should be_nil
@@ -36,13 +36,13 @@ describe Rakismet do
       lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
     end
   end
-  
+
   describe ".validate_key" do
     before (:each) do
       @proxy = mock(Net::HTTP)
       Net::HTTP.stub!(:Proxy).and_return(@proxy)
     end
-    
+
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
@@ -50,7 +50,7 @@ describe Rakismet do
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.validate_key
     end
-    
+
     it "should set @@valid_key = true if key is valid" do
       @proxy.stub!(:start).and_return(mock_response('valid'))
       Rakismet.validate_key
@@ -70,14 +70,14 @@ describe Rakismet do
       Rakismet.validate_key
     end
   end
-  
+
   describe ".akismet_call" do
     before do
       @proxy = mock(Net::HTTP)
       Net::HTTP.stub!(:Proxy).and_return(@proxy)
       @proxy.stub(:start).and_yield(http)
     end
-    
+
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
@@ -85,19 +85,19 @@ describe Rakismet do
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.send(:akismet_call, 'bogus-function')
     end
-    
+
     it "should build url with API key for the correct host" do
       host = 'api.antispam.typepad.com'
       Rakismet.host = host
       @proxy.should_receive(:start).with("#{Rakismet.key}.#{host}")
       Rakismet.send(:akismet_call, 'bogus-function')
     end
-    
+
     it "should post data to named function" do
       http.should_receive(:post).with('/1.1/bogus-function', %r(foo=#{CGI.escape 'escape//this'}), Rakismet.headers)
       Rakismet.send(:akismet_call, 'bogus-function', { :foo => 'escape//this' })
     end
-    
+
     it "should return response.body" do
       Rakismet.send(:akismet_call, 'bogus-function').should eql('akismet response')
     end
@@ -108,5 +108,5 @@ describe Rakismet do
       }.should_not raise_error(NoMethodError)
     end
   end
-  
+
 end
