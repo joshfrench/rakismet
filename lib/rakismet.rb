@@ -13,7 +13,7 @@ module Rakismet
   Undefined = Class.new(NameError)
 
   class << self
-    attr_accessor :key, :url, :host, :proxy_host, :proxy_port
+    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test
 
     def request
       @request ||= Request.new
@@ -52,7 +52,7 @@ module Rakismet
 
     def akismet_call(function, args={})
       validate_config
-      args.merge!(:blog => Rakismet.url)
+      args.merge!(:blog => Rakismet.url, :is_test => Rakismet.test_mode)
       akismet = URI.parse(call_url(function))
       response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
         params = args.map do |k,v|
@@ -78,6 +78,10 @@ module Rakismet
       raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.nil? || Rakismet.key.empty?
       raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.nil? || Rakismet.url.empty?
       raise Undefined, "Rakismet.host is not defined" if Rakismet.host.nil? || Rakismet.host.empty?
+    end
+
+    def test_mode
+      test ? 1 : 0
     end
   end
 
