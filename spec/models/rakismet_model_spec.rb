@@ -8,7 +8,7 @@ describe AkismetModel do
   end
 
   it "should have default mappings" do
-    [:comment_type, :author, :author_email, :author_url, :content].each do |field|
+    [:comment_type, :author, :author_email, :author_url, :content, :user_role].each do |field|
       fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
       AkismetModel.akismet_attrs[fieldname].should eql(field)
      end
