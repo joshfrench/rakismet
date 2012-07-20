@@ -1,3 +1,6 @@
+* Clean up gemspec and load paths [Steven Harman]
+* Add Akismet is_test param [Steven Harman]
+* Add Akismet user_role attribute [Steven Harman]
 = 1.2.1
 * Fix deprecated usage of HTTPResponse for Ruby 1.9.3 [Leonid Shevtsov]
 = 1.2.0
