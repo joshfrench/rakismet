@@ -15,7 +15,13 @@ Compatibility
 Getting Started
 ===============
 
-Once you've installed the Rakismet gem and added it to your application's Gemfile,
+Add the Rakismet gem to your Gemfile
+
+```ruby
+gem 'rakismet'
+```
+
+Once you've added the Rakismet gem to your Gemfile and installed it with ``bundle install``,
 you'll need an API key. Head on over to http://akismet.com/signup/ and sign up
 for a new username.
 
