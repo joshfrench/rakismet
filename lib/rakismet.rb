@@ -9,7 +9,7 @@ require 'rakismet/version'
 require 'rakismet/railtie.rb' if defined?(Rails)
 
 module Rakismet
-  Request = Struct.new(:user_ip, :user_agent, :referrer)
+  Request = Struct.new(:user_ip, :user_agent, :referrer, :http_headers)
   Undefined = Class.new(NameError)
 
   class << self
@@ -22,6 +22,9 @@ module Rakismet
     def set_request_vars(env)
       request.user_ip, request.user_agent, request.referrer =
         env['REMOTE_ADDR'], env['HTTP_USER_AGENT'], env['HTTP_REFERER']
+        
+      # Collect all CGI-style HTTP_ headers except cookies for privacy..
+      request.http_headers = env.select { |k,v| k =~ /^HTTP_/ }.reject { |k,v| k == 'HTTP_COOKIE' }
     end
 
     def clear_request

@@ -27,8 +27,16 @@ def request
                  :referrer => 'http://test.host/referrer')
 end
 
+def request_with_headers
+  OpenStruct.new(:user_ip => '127.0.0.1',
+                 :user_agent => 'RSpec',
+                 :referrer => 'http://test.host/referrer',
+                 :http_headers => { 'HTTP_USER_AGENT' => 'RSpec', 'HTTP_REFERER' => 'http://test.host/referrer' } )  
+end
+
 def empty_request
   OpenStruct.new(:user_ip => nil,
                  :user_agent => nil,
-                 :referrer => nil)
+                 :referrer => nil,
+                 :http_headers => nil)
 end
