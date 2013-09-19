@@ -1,3 +1,4 @@
+* Add Akistmet permalink attribute [Eric Hochberger]
 * Clean up gemspec and load paths [Steven Harman]
 * Add Akismet is_test param [Steven Harman]
 * Add Akismet user_role attribute [Steven Harman]
