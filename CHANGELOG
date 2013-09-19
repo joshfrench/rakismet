@@ -1,3 +1,4 @@
+* Send HTTP_* headers if Rack middleware is being used [Eric Hochberger]
 * Clean up gemspec and load paths [Steven Harman]
 * Add Akismet is_test param [Steven Harman]
 * Add Akismet user_role attribute [Steven Harman]
