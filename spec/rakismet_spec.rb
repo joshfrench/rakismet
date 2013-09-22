@@ -20,6 +20,18 @@ describe Rakismet do
     end
   end
 
+  describe "url" do
+    it "should allow url to be a string" do
+      Rakismet.url = "string.example.com"
+      Rakismet.url.should eql("string.example.com")
+    end
+
+    it "should allow url to be a proc" do
+      Rakismet.url = Proc.new { "proc.example.com" }
+      Rakismet.url.should eql("proc.example.com")
+    end
+  end
+
   describe ".validate_config" do
     it "should raise an error if key is not found" do
       Rakismet.key = ''
