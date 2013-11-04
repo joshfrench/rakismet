@@ -150,6 +150,15 @@ your app initialization:
 config.rakismet.use_middleware = false
 ```
 
+Additionally, the middleware will send along additional env variables starting with 
+HTTP_ to Akismet. If you wish to block any sensitive user information, use:
+
+```ruby
+config.rakismet.excluded_headers = ['HTTP_COOKIE','HTTP_SENSITIVE']
+```
+
+excluded_headers will default to ['HTTP_COOKIE']
+
 Testing
 -------
 
