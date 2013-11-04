@@ -1,4 +1,9 @@
-* Send HTTP_* headers if Rack middleware is being used [Eric Hochberger]
+= 1.5.0
+* Send HTTP_ env varialbes to Akismet [Eric Hochberger]
+= 1.4.0
+* Allow endpoint to be specified with a proc for multitenant applications [Bradly Feeley]
+* Add Akistmet permalink attribute [Eric Hochberger]
+= 1.3.0
 * Clean up gemspec and load paths [Steven Harman]
 * Add Akismet is_test param [Steven Harman]
 * Add Akismet user_role attribute [Steven Harman]

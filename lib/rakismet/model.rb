@@ -14,7 +14,7 @@ module Rakismet
     module ClassMethods
       def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
-        [:comment_type, :author, :author_url, :author_email, :content, :user_role].each do |field|
+        [:comment_type, :author, :author_url, :author_email, :content, :user_role, :permalink].each do |field|
           # clunky, but throwing around +type+ will break your heart
           fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
           self.akismet_attrs[fieldname] = args.delete(field) || field
@@ -64,7 +64,7 @@ module Rakismet
                                 elsif !mapped_field.nil? && respond_to?(mapped_field)
                                   send(mapped_field)
                                 elsif not [:comment_type, :author, :author_email,
-                                        :author_url, :content, :user_role,
+                                        :author_url, :content, :user_role, :permalink,
                                         :user_ip, :referrer,
                                         :user_agent].include?(mapped_field)
                                   # we've excluded any fields that appear to

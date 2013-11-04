@@ -52,6 +52,12 @@ config.rakismet.proxy_host = 'http://yourdomain.com/'
 config.rakismet.proxy_port = '8080'
 ```
 
+If your Rails app is a multitenant application, you can specify your Rakismet url as a proc:
+
+```ruby
+config.rakismet.url = Proc.new { ApplicationController.current_tenant.url }
+```
+
 Checking For Spam
 -----------------
 
