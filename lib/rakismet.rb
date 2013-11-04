@@ -13,7 +13,11 @@ module Rakismet
   Undefined = Class.new(NameError)
 
   class << self
-    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test
+    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers
+    
+    def excluded_headers
+      @excluded_headers || ['HTTP_COOKIE']
+    end
 
     def request
       @request ||= Request.new
@@ -24,7 +28,7 @@ module Rakismet
         env['REMOTE_ADDR'], env['HTTP_USER_AGENT'], env['HTTP_REFERER']
         
       # Collect all CGI-style HTTP_ headers except cookies for privacy..
-      request.http_headers = env.select { |k,v| k =~ /^HTTP_/ }.reject { |k,v| k == 'HTTP_COOKIE' }
+      request.http_headers = env.select { |k,v| k =~ /^HTTP_/ }.reject { |k,v| excluded_headers.include? k }
     end
 
     def clear_request
