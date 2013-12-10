@@ -1,3 +1,5 @@
+= 1.5.0
+* Send HTTP_ env varialbes to Akismet [Eric Hochberger]
 = 1.4.0
 * Allow endpoint to be specified with a proc for multitenant applications [Bradly Feeley]
 * Add Akistmet permalink attribute [Eric Hochberger]

@@ -38,6 +38,17 @@ describe AkismetModel do
       @model.spam?
     end
 
+    it "should send http_headers from Rakismet.request if present" do
+      Rakismet.stub!(:request).and_return(request_with_headers)
+      Rakismet.should_receive(:akismet_call).
+                with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
+                                                          :user_agent => 'RSpec',
+                                                          :referrer => 'http://test.host/referrer',
+                                                          'HTTP_USER_AGENT' => 'RSpec',
+                                                          'HTTP_REFERER' => 'http://test.host/referrer'))
+      @model.spam?
+    end
+
     it "should cache result of #spam?" do
       Rakismet.should_receive(:akismet_call).once
       @model.spam?

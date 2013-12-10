@@ -38,7 +38,7 @@ module Rakismet
         if instance_variable_defined? :@_spam
           @_spam
         else
-          data = akismet_data
+          data = akismet_data(true) # Only spam? check should include http_headers
           self.akismet_response = Rakismet.akismet_call('comment-check', data)
           @_spam = self.akismet_response == 'true'
         end
@@ -56,7 +56,7 @@ module Rakismet
 
       private
 
-        def akismet_data
+        def akismet_data(include_http_headers = false)
           akismet = self.class.akismet_attrs.keys.inject({}) do |data,attr|
             mapped_field = self.class.akismet_attrs[attr]
             data.merge attr =>  if mapped_field.is_a?(Proc)
@@ -76,6 +76,7 @@ module Rakismet
                                   Rakismet.request.send(attr)
                                 end
           end
+          akismet.merge! Rakismet.request.http_headers if include_http_headers and Rakismet.request.http_headers
           akismet.delete_if { |k,v| v.nil? || v.empty? }
           akismet[:comment_type] ||= 'comment'
           akismet

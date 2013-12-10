@@ -82,6 +82,12 @@ describe Rakismet do
       Rakismet.validate_key
     end
   end
+  
+  describe '.excluded_headers' do
+    it "should default to ['HTTP_COOKIE']" do
+      Rakismet.excluded_headers.should eq ['HTTP_COOKIE']
+    end
+  end
 
   describe ".akismet_call" do
     before do
