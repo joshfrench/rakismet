@@ -201,7 +201,7 @@ If you want to see what's happening behind the scenes, after you call one of
 
 This will contain the last response from the Akismet server. In the case of
 `spam?` it should be `true` or `false.` For `spam!` and `ham!` it should be
-`Feedback received.` If Akismet returned an error instead (e.g. if you left out
+`Thanks for making the web a better place.` If Akismet returned an error instead (e.g. if you left out
 some required information) this will contain the error message.
 
 FAQ

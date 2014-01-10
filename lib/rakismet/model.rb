@@ -45,12 +45,12 @@ module Rakismet
       end
 
       def spam!
-        Rakismet.akismet_call('submit-spam', akismet_data)
+        self.akismet_response = Rakismet.akismet_call('submit-spam', akismet_data)
         @_spam = true
       end
 
       def ham!
-        Rakismet.akismet_call('submit-ham', akismet_data)
+        self.akismet_response = Rakismet.akismet_call('submit-ham', akismet_data)
         @_spam = false
       end
 

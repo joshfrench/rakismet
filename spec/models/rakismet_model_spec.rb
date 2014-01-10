@@ -90,6 +90,12 @@ describe AkismetModel do
       @model.spam!
       @model.should be_spam
     end
+
+    it "should set akismet response" do
+      Rakismet.stub!(:akismet_call).and_return('response')
+      @model.spam!
+      @model.akismet_response.should eql('response')
+    end
   end
 
   describe ".ham!" do
@@ -103,6 +109,12 @@ describe AkismetModel do
       @model.instance_variable_set(:@_spam, true)
       @model.ham!
       @model.should_not be_spam
+    end
+
+    it "should set akismet response" do
+      Rakismet.stub!(:akismet_call).and_return('response')
+      @model.ham!
+      @model.akismet_response.should eql('response')
     end
   end
 
