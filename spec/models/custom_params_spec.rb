@@ -14,7 +14,7 @@ describe CustomAkismetModel do
   it "should override default mappings" do
     [:comment_type, :author, :author_url, :author_email, :content, :user_role, :permalink].each do |field|
       fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
-       CustomAkismetModel.akismet_attrs[fieldname].should eql(MAPPED_PARAMS[field])
+       expect(CustomAkismetModel.akismet_attrs[fieldname]).to eql(MAPPED_PARAMS[field])
      end
   end
 end
