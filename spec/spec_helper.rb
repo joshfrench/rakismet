@@ -3,6 +3,12 @@ require 'ostruct'
 
 RSpec.configure do |config|
   config.mock_with :rspec
+
+  config.before(:all) do
+    Rakismet.key = '123'
+    Rakismet.url = 'http://test.host'
+    Rakismet.host = 'rest.akismet.com'
+  end
 end
 
 class AkismetModel
@@ -31,7 +37,7 @@ def request_with_headers
   OpenStruct.new(:user_ip => '127.0.0.1',
                  :user_agent => 'RSpec',
                  :referrer => 'http://test.host/referrer',
-                 :http_headers => { 'HTTP_USER_AGENT' => 'RSpec', 'HTTP_REFERER' => 'http://test.host/referrer' } )  
+                 :http_headers => { 'HTTP_USER_AGENT' => 'RSpec', 'HTTP_REFERER' => 'http://test.host/referrer' } )
 end
 
 def empty_request

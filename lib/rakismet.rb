@@ -13,18 +13,10 @@ module Rakismet
   Undefined = Class.new(NameError)
 
   class << self
-    [:key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers].each do |accessor|
-      define_method accessor do
-        Thread.current[:"rakismet_#{accessor}"]
-      end
-
-      define_method :"#{accessor}=" do |new_val|
-        Thread.current[:"rakismet_#{accessor}"] = new_val
-      end
-    end
+    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers
 
     def excluded_headers
-      Thread.current[:rakismet_excluded_headers] || ['HTTP_COOKIE']
+      @excluded_headers || ['HTTP_COOKIE']
     end
 
     def request
@@ -32,8 +24,7 @@ module Rakismet
     end
 
     def url
-      rakismet_url = Thread.current[:rakismet_url]
-      rakismet_url.is_a?(Proc) ? rakismet_url.call : rakismet_url
+      @url.is_a?(Proc) ? @url.call : @url
     end
 
     def set_request_vars(env)

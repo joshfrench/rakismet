@@ -30,8 +30,8 @@ describe AkismetModel do
       [:user_ip, :user_agent, :referrer].each do |field|
         expect(@model).not_to respond_to(:field)
       end
-      Rakismet.stub(:request).and_return(request)
-      Rakismet.should_receive(:akismet_call).
+      allow(Rakismet).to receive(:request){request}
+      expect(Rakismet).to receive(:akismet_call).
                 with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
                                                           :user_agent => 'RSpec',
                                                           :referrer => 'http://test.host/referrer'))
@@ -72,7 +72,6 @@ describe AkismetModel do
     end
 
     it "should not throw an error if request vars are missing" do
-      pending "Trying to figure out how to rewrite this or if it's even still correct"
       Rakismet.stub(:request).and_return(empty_request)
       expect{ @model.spam? }.not_to raise_error
     end
