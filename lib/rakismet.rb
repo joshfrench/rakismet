@@ -13,34 +13,43 @@ module Rakismet
   Undefined = Class.new(NameError)
 
   class << self
-    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers
-    
+    [:key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers].each do |accessor|
+      define_method accessor do
+        Thread.current[:"rakismet_#{accessor}"]
+      end
+
+      define_method :"#{accessor}=" do |new_val|
+        Thread.current[:"rakismet_#{accessor}"] = new_val
+      end
+    end
+
     def excluded_headers
-      @excluded_headers || ['HTTP_COOKIE']
+      Thread.current[:rakismet_excluded_headers] || ['HTTP_COOKIE']
     end
 
     def request
-      @request ||= Request.new
+      Thread.current[:rakismet_request] ||= Request.new
     end
 
     def url
-      @url.is_a?(Proc) ? @url.call : @url
+      rakismet_url = Thread.current[:rakismet_url]
+      rakismet_url.is_a?(Proc) ? rakismet_url.call : rakismet_url
     end
 
     def set_request_vars(env)
       request.user_ip, request.user_agent, request.referrer =
         env['REMOTE_ADDR'], env['HTTP_USER_AGENT'], env['HTTP_REFERER']
-        
+
       # Collect all CGI-style HTTP_ headers except cookies for privacy..
       request.http_headers = env.select { |k,v| k =~ /^HTTP_/ }.reject { |k,v| excluded_headers.include? k }
     end
 
     def clear_request
-      @request = Request.new
+      Thread.current[:rakismet_request] = Request.new
     end
 
     def headers
-      @headers ||= begin
+      Thead.current[:rakismet_headers] ||= begin
         user_agent = "Rakismet/#{Rakismet::VERSION}"
         user_agent = "Rails/#{Rails.version} | " + user_agent if defined?(Rails)
         { 'User-Agent' => user_agent, 'Content-Type' => 'application/x-www-form-urlencoded' }
@@ -54,11 +63,11 @@ module Rakismet
         data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
         http.post(akismet.path, data, Rakismet.headers)
       end
-      @valid_key = (response.body == 'valid')
+      Thread.current[:rakismet_valid_key] = (response.body == 'valid')
     end
 
     def valid_key?
-      @valid_key == true
+      Thread.current[:rakismet_valid_key] == true
     end
 
     def akismet_call(function, args={})

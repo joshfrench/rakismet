@@ -82,6 +82,5 @@ module Rakismet
           akismet
         end
     end
-
   end
 end
