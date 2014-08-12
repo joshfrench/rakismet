@@ -23,8 +23,16 @@ module Rakismet
       @request ||= Request.new
     end
 
+    def key
+      @key.is_a?(Proc) ? @key.call : @key
+    end
+    
     def url
       @url.is_a?(Proc) ? @url.call : @url
+    end
+    
+    def host
+      @host.is_a?(Proc) ? @host.call : @host
     end
 
     def set_request_vars(env)
