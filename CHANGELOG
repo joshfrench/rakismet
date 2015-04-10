@@ -1,5 +1,5 @@
 = 1.5.1
-* Send user_role attribute to Akismet without comment prefix
+* Send user_role attribute to Akismet without comment prefix [Hugo Bauer]
 = 1.5.0
 * Send HTTP_ env varialbes to Akismet [Eric Hochberger]
 = 1.4.0
