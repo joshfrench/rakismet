@@ -8,14 +8,14 @@ describe AkismetModel do
   end
 
   it "should have default mappings" do
-    [:comment_type, :author, :author_email, :author_url, :content, :user_role, :permalink].each do |field|
+    [:comment_type, :author, :author_email, :author_url, :content, :permalink].each do |field|
       fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
       AkismetModel.akismet_attrs[fieldname].should eql(field)
      end
   end
 
   it "should have request mappings" do
-    [:user_ip, :user_agent, :referrer].each do |field|
+    [:user_ip, :user_agent, :referrer, :user_role].each do |field|
       AkismetModel.akismet_attrs[field].should eql(field)
      end
   end
@@ -27,7 +27,7 @@ describe AkismetModel do
   describe ".spam?" do
 
     it "should use request variables from Rakismet.request if absent in model" do
-      [:user_ip, :user_agent, :referrer].each do |field|
+      [:user_ip, :user_agent, :referrer, :user_role].each do |field|
         @model.should_not respond_to(:field)
       end
       Rakismet.stub!(:request).and_return(request)

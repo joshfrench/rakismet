@@ -220,6 +220,9 @@ How can I simulate a spam submission?
 Most people have the opposite problem, where Akismet doesn't think anything is
 spam. The only guaranteed way to trigger a positive spam response is to set the
 comment author to "viagra-test-123".
+To simulate a negative (not spam) result, set user_role to administrator, and all
+other required fields populated with typical values. The Akismet API will always
+return a false response.
 
 If you've done this and `spam?` is still returning false, you're probably
 missing the user IP or one of the key/url config variables. One way to check is

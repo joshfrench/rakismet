@@ -2,7 +2,7 @@ require  'spec_helper'
 
 MAPPED_PARAMS = { :comment_type => :type2, :author => :author2, :content => :content2,
                   :author_email => :author_email2, :author_url => :author_url2,
-                  :user_role => :user_role2, :permalink => :permalink2 }
+                  :permalink => :permalink2 }
 
 class CustomAkismetModel
   include Rakismet::Model
