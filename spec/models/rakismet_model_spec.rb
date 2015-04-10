@@ -4,35 +4,35 @@ describe AkismetModel do
 
   before do
     @model = AkismetModel.new
-    comment_attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
+    comment_attrs.each_pair { |k,v| allow(@model).to receive(k){v} }
   end
 
   it "should have default mappings" do
     [:comment_type, :author, :author_email, :author_url, :content, :permalink].each do |field|
       fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
-      AkismetModel.akismet_attrs[fieldname].should eql(field)
+      expect(AkismetModel.akismet_attrs[fieldname]).to eql(field)
      end
     AkismetModel::akismet_attrs[:user_role].should eql(:user_role)
   end
 
   it "should have request mappings" do
     [:user_ip, :user_agent, :referrer].each do |field|
-      AkismetModel.akismet_attrs[field].should eql(field)
+      expect(AkismetModel.akismet_attrs[field]).to eql(field)
      end
   end
 
   it "should populate comment type" do
-    @model.send(:akismet_data)[:comment_type].should == comment_attrs[:comment_type]
+    expect(@model.send(:akismet_data)[:comment_type]).to eql(comment_attrs[:comment_type])
   end
 
   describe ".spam?" do
 
     it "should use request variables from Rakismet.request if absent in model" do
       [:user_ip, :user_agent, :referrer].each do |field|
-        @model.should_not respond_to(:field)
+        expect(@model).not_to respond_to(:field)
       end
-      Rakismet.stub!(:request).and_return(request)
-      Rakismet.should_receive(:akismet_call).
+      allow(Rakismet).to receive(:request){request}
+      expect(Rakismet).to receive(:akismet_call).
                 with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
                                                           :user_agent => 'RSpec',
                                                           :referrer => 'http://test.host/referrer'))
@@ -40,8 +40,8 @@ describe AkismetModel do
     end
 
     it "should send http_headers from Rakismet.request if present" do
-      Rakismet.stub!(:request).and_return(request_with_headers)
-      Rakismet.should_receive(:akismet_call).
+      allow(Rakismet).to receive(:request) {request_with_headers}
+      expect(Rakismet).to receive(:akismet_call).
                 with('comment-check', akismet_attrs.merge(:user_ip => '127.0.0.1',
                                                           :user_agent => 'RSpec',
                                                           :referrer => 'http://test.host/referrer',
@@ -57,24 +57,24 @@ describe AkismetModel do
     end
 
     it "should be true if comment is spam" do
-      Rakismet.stub!(:akismet_call).and_return('true')
-      @model.should be_spam
+      Rakismet.stub(:akismet_call).and_return('true')
+      expect(@model).to be_spam
     end
 
     it "should be false if comment is not spam" do
-      Rakismet.stub!(:akismet_call).and_return('false')
-      @model.should_not be_spam
+      Rakismet.stub(:akismet_call).and_return('false')
+      expect(@model).not_to be_spam
     end
 
     it "should set akismet_response" do
-      Rakismet.stub!(:akismet_call).and_return('response')
+      Rakismet.stub(:akismet_call).and_return('response')
       @model.spam?
-      @model.akismet_response.should eql('response')
+      expect(@model.akismet_response).to eql('response')
     end
 
     it "should not throw an error if request vars are missing" do
-      Rakismet.stub!(:request).and_return(empty_request)
-      lambda { @model.spam? }.should_not raise_error(NoMethodError)
+      Rakismet.stub(:request).and_return(empty_request)
+      expect{ @model.spam? }.not_to raise_error
     end
   end
 
@@ -86,10 +86,10 @@ describe AkismetModel do
     end
 
     it "should mutate #spam?" do
-      Rakismet.stub!(:akismet_call)
+      Rakismet.stub(:akismet_call)
       @model.instance_variable_set(:@_spam, false)
       @model.spam!
-      @model.should be_spam
+      expect(@model).to be_spam
     end
   end
 
@@ -100,11 +100,10 @@ describe AkismetModel do
     end
 
     it "should mutate #spam?" do
-      Rakismet.stub!(:akismet_call)
+      Rakismet.stub(:akismet_call)
       @model.instance_variable_set(:@_spam, true)
       @model.ham!
-      @model.should_not be_spam
+      expect(@model).not_to be_spam
     end
   end
-
 end

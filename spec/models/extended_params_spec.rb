@@ -10,7 +10,7 @@ end
 describe ExtendedAkismetModel do
   it "should include additional attributes" do
     [:extra, :another].each do |field|
-      ExtendedAkismetModel.akismet_attrs[field].should eql(EXTRA[field])
+      expect(ExtendedAkismetModel.akismet_attrs[field]).to eql(EXTRA[field])
     end
   end
 end

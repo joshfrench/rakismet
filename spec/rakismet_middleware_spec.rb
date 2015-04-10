@@ -26,10 +26,9 @@ describe Rakismet::Middleware do
 
   it "should clear Rakismet.request after request is complete" do
     @middleware.call(env)
-    Rakismet.request.user_ip.should be_nil
-    Rakismet.request.user_agent.should be_nil
-    Rakismet.request.referrer.should be_nil
-    Rakismet.request.http_headers.should be_nil
+    expect(Rakismet.request.user_ip).to be_nil
+    expect(Rakismet.request.user_agent).to be_nil
+    expect(Rakismet.request.referrer).to be_nil
+    expect(Rakismet.request.http_headers).to be_nil
   end
-  
 end

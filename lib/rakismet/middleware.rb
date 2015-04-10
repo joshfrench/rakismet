@@ -11,6 +11,5 @@ module Rakismet
       Rakismet.clear_request
       response
     end
-
   end
 end

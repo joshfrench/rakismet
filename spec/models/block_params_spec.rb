@@ -8,18 +8,17 @@ class BlockAkismetModel
 end
 
 describe BlockAkismetModel do
-
   before do
     @block = BlockAkismetModel.new
-    comment_attrs.each_pair { |k,v| @block.stub!(k).and_return(v) }
+    comment_attrs.each_pair { |k,v| allow(@block).to receive(k){v} }
   end
 
   it "should accept a block" do
-    BlockAkismetModel.akismet_attrs[:comment_author].should eql(PROC)
+    expect(BlockAkismetModel.akismet_attrs[:comment_author]).to eql(PROC)
   end
 
   it "should eval block with self = instance" do
     data = @block.send(:akismet_data)
-    data[:comment_author].should eql(comment_attrs[:author].reverse)
+    expect(data[:comment_author]).to eql(comment_attrs[:author].reverse)
   end
 end
