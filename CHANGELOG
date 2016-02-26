@@ -1,3 +1,5 @@
+= 1.5.2
+* Don't try to send Rails.version unless it's actually defined [Brett Bender]
 = 1.5.1
 * Send user_role attribute to Akismet without comment prefix [Hugo Bauer]
 = 1.5.0
