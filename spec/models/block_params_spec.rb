@@ -11,7 +11,7 @@ describe BlockAkismetModel do
 
   before do
     @block = BlockAkismetModel.new
-    comment_attrs.each_pair { |k,v| @block.stub!(k).and_return(v) }
+    comment_attrs.each_pair { |k,v| @block.stub(k).and_return(v) }
   end
 
   it "should accept a block" do

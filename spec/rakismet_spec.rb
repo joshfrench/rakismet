@@ -35,44 +35,44 @@ describe Rakismet do
   describe ".validate_config" do
     it "should raise an error if key is not found" do
       Rakismet.key = ''
-      lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet.send(:validate_config) }.should raise_error
     end
 
     it "should raise an error if url is not found" do
       Rakismet.url = ''
-      lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet.send(:validate_config) }.should raise_error
     end
 
     it "should raise an error if host is not found" do
       Rakismet.host = ''
-      lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
+      lambda { Rakismet.send(:validate_config) }.should raise_error
     end
   end
 
   describe ".validate_key" do
     before (:each) do
-      @proxy = mock(Net::HTTP)
-      Net::HTTP.stub!(:Proxy).and_return(@proxy)
+      @proxy = double(Net::HTTP)
+      Net::HTTP.stub(:Proxy).and_return(@proxy)
     end
 
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub!(:start).and_return(mock_response('valid'))
+      @proxy.stub(:start).and_return(mock_response('valid'))
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.validate_key
     end
 
     it "should set @@valid_key = true if key is valid" do
-      @proxy.stub!(:start).and_return(mock_response('valid'))
+      @proxy.stub(:start).and_return(mock_response('valid'))
       Rakismet.validate_key
-      Rakismet.valid_key?.should be_true
+      Rakismet.valid_key?.should be_truthy
     end
 
     it "should set @@valid_key = false if key is invalid" do
-      @proxy.stub!(:start).and_return(mock_response('invalid'))
+      @proxy.stub(:start).and_return(mock_response('invalid'))
       Rakismet.validate_key
-      Rakismet.valid_key?.should be_false
+      Rakismet.valid_key?.should be_falsey
     end
 
     it "should build url with host" do
@@ -82,7 +82,7 @@ describe Rakismet do
       Rakismet.validate_key
     end
   end
-  
+
   describe '.excluded_headers' do
     it "should default to ['HTTP_COOKIE']" do
       Rakismet.excluded_headers.should eq ['HTTP_COOKIE']
@@ -91,15 +91,15 @@ describe Rakismet do
 
   describe ".akismet_call" do
     before do
-      @proxy = mock(Net::HTTP)
-      Net::HTTP.stub!(:Proxy).and_return(@proxy)
+      @proxy = double(Net::HTTP)
+      Net::HTTP.stub(:Proxy).and_return(@proxy)
       @proxy.stub(:start).and_yield(http)
     end
 
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub!(:start).and_return(mock_response('valid'))
+      @proxy.stub(:start).and_return(mock_response('valid'))
       Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
       Rakismet.send(:akismet_call, 'bogus-function')
     end
@@ -134,7 +134,7 @@ describe Rakismet do
     it "should build query string when params are nil" do
       lambda {
         Rakismet.send(:akismet_call, 'bogus-function', { :nil_param => nil })
-      }.should_not raise_error(NoMethodError)
+      }.should_not raise_error
     end
   end
 

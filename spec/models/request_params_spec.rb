@@ -9,7 +9,7 @@ describe RequestParams do
     before do
       @model = RequestParams.new
       attrs = comment_attrs(:user_ip => '192.168.0.1', :user_agent => 'Rakismet', :referrer => 'http://localhost/referrer')
-      attrs.each_pair { |k,v| @model.stub!(k).and_return(v) }
+      attrs.each_pair { |k,v| @model.stub(k).and_return(v) }
     end
 
   it "should use local values even if Rakismet.request is populated" do
