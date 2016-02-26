@@ -42,7 +42,11 @@ module Rakismet
     def headers
       @headers ||= begin
         user_agent = "Rakismet/#{Rakismet::VERSION}"
-        user_agent = "Rails/#{Rails.version} | " + user_agent if defined?(Rails)
+
+        if defined?(Rails) && Rails.respond_to?(:version)
+          user_agent = "Rails/#{Rails.version} | " + user_agent
+        end
+
         { 'User-Agent' => user_agent, 'Content-Type' => 'application/x-www-form-urlencoded' }
       end
     end
