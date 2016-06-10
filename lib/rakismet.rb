@@ -54,7 +54,7 @@ module Rakismet
     def validate_key
       validate_config
       akismet = URI.parse(verify_url)
-      response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
+      response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
         data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
         http.post(akismet.path, data, Rakismet.headers)
       end
@@ -69,7 +69,7 @@ module Rakismet
       validate_config
       args.merge!(:blog => Rakismet.url, :is_test => Rakismet.test_mode)
       akismet = URI.parse(call_url(function))
-      response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
+      response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
         params = args.map do |k,v|
           param = v.class < String ? v.to_str : v.to_s # for ActiveSupport::SafeBuffer and Nil, respectively
           "#{k}=#{CGI.escape(param)}"
@@ -82,11 +82,11 @@ module Rakismet
     protected
 
     def verify_url
-      "http://#{Rakismet.host}/1.1/verify-key"
+      "https://#{Rakismet.host}/1.1/verify-key"
     end
 
     def call_url(function)
-      "http://#{Rakismet.key}.#{Rakismet.host}/1.1/#{function}"
+      "https://#{Rakismet.key}.#{Rakismet.host}/1.1/#{function}"
     end
 
     def validate_config

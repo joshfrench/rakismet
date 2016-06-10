@@ -11,6 +11,10 @@ describe Rakismet do
     Rakismet.key = 'dummy-key'
     Rakismet.url = 'test.localhost'
     Rakismet.host = 'endpoint.localhost'
+    Rakismet.proxy_host = nil
+    Rakismet.proxy_port = nil
+
+    @test_url = "#{Rakismet.key}.#{Rakismet.host}"
   end
 
   describe "proxy host" do
@@ -50,27 +54,24 @@ describe Rakismet do
   end
 
   describe ".validate_key" do
-    before (:each) do
-      @proxy = double(Net::HTTP)
-      Net::HTTP.stub(:Proxy).and_return(@proxy)
-    end
-
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub(:start).and_return(mock_response('valid'))
-      Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
+
+      Net::HTTP.should_receive(:start).with(Rakismet.host, use_ssl: true, p_addr: 'proxy_host', p_port: 'proxy_port')
+        .and_return(mock_response('valid'))
+
       Rakismet.validate_key
     end
 
     it "should set @@valid_key = true if key is valid" do
-      @proxy.stub(:start).and_return(mock_response('valid'))
+      Net::HTTP.stub(:start).and_return(mock_response('valid'))
       Rakismet.validate_key
       Rakismet.valid_key?.should be_truthy
     end
 
     it "should set @@valid_key = false if key is invalid" do
-      @proxy.stub(:start).and_return(mock_response('invalid'))
+      Net::HTTP.stub(:start).and_return(mock_response('invalid'))
       Rakismet.validate_key
       Rakismet.valid_key?.should be_falsey
     end
@@ -78,7 +79,7 @@ describe Rakismet do
     it "should build url with host" do
       host = "api.antispam.typepad.com"
       Rakismet.host = host
-      @proxy.should_receive(:start).with(host).and_yield(http)
+      Net::HTTP.should_receive(:start).with(host, use_ssl: true, p_addr: nil, p_port: nil).and_yield(http)
       Rakismet.validate_key
     end
   end
@@ -91,23 +92,23 @@ describe Rakismet do
 
   describe ".akismet_call" do
     before do
-      @proxy = double(Net::HTTP)
-      Net::HTTP.stub(:Proxy).and_return(@proxy)
-      @proxy.stub(:start).and_yield(http)
+      Net::HTTP.stub(:start).and_yield(http)
     end
 
     it "should use proxy host and port" do
       Rakismet.proxy_host = 'proxy_host'
       Rakismet.proxy_port = 'proxy_port'
-      @proxy.stub(:start).and_return(mock_response('valid'))
-      Net::HTTP.should_receive(:Proxy).with('proxy_host', 'proxy_port').and_return(@proxy)
+
+      Net::HTTP.should_receive(:start).with(@test_url, use_ssl: true, p_addr: 'proxy_host', p_port: 'proxy_port')
+        .and_return(mock_response('valid'))
+
       Rakismet.send(:akismet_call, 'bogus-function')
     end
 
     it "should build url with API key for the correct host" do
       host = 'api.antispam.typepad.com'
       Rakismet.host = host
-      @proxy.should_receive(:start).with("#{Rakismet.key}.#{host}")
+      Net::HTTP.should_receive(:start).with("#{Rakismet.key}.#{host}", use_ssl: true, p_addr: nil, p_port: nil)
       Rakismet.send(:akismet_call, 'bogus-function')
     end
 
