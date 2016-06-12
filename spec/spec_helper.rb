@@ -2,7 +2,8 @@ require File.expand_path "lib/rakismet"
 require 'ostruct'
 
 RSpec.configure do |config|
-  config.mock_with :rspec
+  config.mock_with(:rspec)   { |c| c.syntax = :should }
+  config.expect_with(:rspec) { |c| c.syntax = :should }
 end
 
 class AkismetModel
