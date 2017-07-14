@@ -1,3 +1,5 @@
+= 1.5.4
+* Don't prefix permalink param with comment_
 = 1.5.3
 * Use HTTPS to connect to Akismet [Christian Wesselhoeft]
 = 1.5.2

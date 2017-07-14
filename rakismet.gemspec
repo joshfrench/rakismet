@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/joshfrench/rakismet"
   s.summary = "Akismet and TypePad AntiSpam integration for Rails."
   s.description = "Rakismet is the easiest way to integrate Akismet or TypePad's AntiSpam into your Rails app."
-  s.date = "2016-06-12"
+  s.date = "2017-07-14"
 
   s.rubyforge_project = "rakismet"
   s.add_development_dependency "rake"
