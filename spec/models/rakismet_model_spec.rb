@@ -7,11 +7,13 @@ describe AkismetModel do
     comment_attrs.each_pair { |k,v| @model.stub(k).and_return(v) }
   end
 
-  it "should have default mappings" do
-    [:comment_type, :author, :author_email, :author_url, :content, :permalink].each do |field|
-      fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
-      AkismetModel.akismet_attrs[fieldname].should eql(field)
-     end
+  it "should map internal params to Akismet params" do
+    AkismetModel::akismet_attrs[:comment_author].should eql(:author)
+    AkismetModel::akismet_attrs[:comment_author_email].should eql(:author_email)
+    AkismetModel::akismet_attrs[:comment_author_url].should eql(:author_url)
+    AkismetModel::akismet_attrs[:comment_content].should eql(:content)
+    AkismetModel::akismet_attrs[:comment_type].should eql(:comment_type)
+    AkismetModel::akismet_attrs[:permalink].should eql(:permalink)
     AkismetModel::akismet_attrs[:user_role].should eql(:user_role)
   end
 

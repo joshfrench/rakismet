@@ -12,9 +12,11 @@ end
 
 describe CustomAkismetModel do
   it "should override default mappings" do
-    [:comment_type, :author, :author_url, :author_email, :content, :user_role, :permalink].each do |field|
-      fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
-       CustomAkismetModel.akismet_attrs[fieldname].should eql(MAPPED_PARAMS[field])
-     end
+    CustomAkismetModel.akismet_attrs[:comment_type].should eql(:type2)
+    CustomAkismetModel.akismet_attrs[:comment_author].should eql(:author2)
+    CustomAkismetModel.akismet_attrs[:comment_content].should eql(:content2)
+    CustomAkismetModel.akismet_attrs[:comment_author_email].should eql(:author_email2)
+    CustomAkismetModel.akismet_attrs[:comment_author_url].should eql(:author_url2)
+    CustomAkismetModel.akismet_attrs[:permalink].should eql(:permalink2)
   end
 end

@@ -14,12 +14,11 @@ module Rakismet
     module ClassMethods
       def rakismet_attrs(args={})
         self.akismet_attrs ||= {}
-        [:comment_type, :author, :author_url, :author_email, :content, :permalink].each do |field|
-          # clunky, but throwing around +type+ will break your heart
-          fieldname = field.to_s =~ %r(^comment_) ? field : "comment_#{field}".intern
+        [:author, :author_url, :author_email, :content].each do |field|
+          fieldname = "comment_#{field}".intern
           self.akismet_attrs[fieldname] = args.delete(field) || field
         end
-        [:user_ip, :user_agent, :referrer, :user_role].each do |field|
+        [:comment_type, :user_ip, :user_agent, :referrer, :user_role, :permalink].each do |field|
           self.akismet_attrs[field] = args.delete(field) || field
         end
         args.each_pair do |f,v|
