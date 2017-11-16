@@ -55,7 +55,7 @@ module Rakismet
       validate_config
       akismet = URI.parse(verify_url)
       response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
-        data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
+        data = "key=#{Rakismet.key}"
         http.post(akismet.path, data, Rakismet.headers)
       end
       @valid_key = (response.body == 'valid')
@@ -67,7 +67,7 @@ module Rakismet
 
     def akismet_call(function, args={})
       validate_config
-      args.merge!(:blog => Rakismet.url, :is_test => Rakismet.test_mode)
+      args.merge!(:is_test => Rakismet.test_mode)
       akismet = URI.parse(call_url(function))
       response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
         params = args.map do |k,v|
@@ -91,7 +91,6 @@ module Rakismet
 
     def validate_config
       raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.nil? || Rakismet.key.empty?
-      raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.nil? || Rakismet.url.empty?
       raise Undefined, "Rakismet.host is not defined" if Rakismet.host.nil? || Rakismet.host.empty?
     end
 

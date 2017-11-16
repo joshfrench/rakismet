@@ -10,7 +10,6 @@ module Rakismet
 
       initializer 'rakismet.setup', :after => :load_config_initializers do |app|
         Rakismet.key = app.config.rakismet[:key]
-        Rakismet.url = app.config.rakismet[:url]
         Rakismet.host = app.config.rakismet[:host]
         Rakismet.proxy_host = app.config.rakismet[:proxy_host]
         Rakismet.proxy_port = app.config.rakismet[:proxy_port]

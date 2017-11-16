@@ -18,7 +18,7 @@ module Rakismet
           fieldname = "comment_#{field}".intern
           self.akismet_attrs[fieldname] = args.delete(field) || field
         end
-        [:comment_type, :user_ip, :user_agent, :referrer, :user_role, :permalink].each do |field|
+        [:comment_type, :user_ip, :user_agent, :referrer, :user_role, :permalink, :blog].each do |field|
           self.akismet_attrs[field] = args.delete(field) || field
         end
         args.each_pair do |f,v|
@@ -65,7 +65,7 @@ module Rakismet
                                 elsif not [:comment_type, :author, :author_email,
                                         :author_url, :content, :user_role, :permalink,
                                         :user_ip, :referrer,
-                                        :user_agent].include?(mapped_field)
+                                        :user_agent, :blog].include?(mapped_field)
                                   # we've excluded any fields that appear to
                                   # have their default unmapped values
                                   mapped_field
