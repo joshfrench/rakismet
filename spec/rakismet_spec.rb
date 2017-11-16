@@ -42,11 +42,6 @@ describe Rakismet do
       lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
     end
 
-    it "should raise an error if url is not found" do
-      Rakismet.url = ''
-      lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)
-    end
-
     it "should raise an error if host is not found" do
       Rakismet.host = ''
       lambda { Rakismet.send(:validate_config) }.should raise_error(Rakismet::Undefined)

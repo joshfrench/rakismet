@@ -91,7 +91,6 @@ module Rakismet
 
     def validate_config
       raise Undefined, "Rakismet.key is not defined"  if Rakismet.key.nil? || Rakismet.key.empty?
-      raise Undefined, "Rakismet.url is not defined"  if Rakismet.url.nil? || Rakismet.url.empty?
       raise Undefined, "Rakismet.host is not defined" if Rakismet.host.nil? || Rakismet.host.empty?
     end
 
