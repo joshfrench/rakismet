@@ -13,7 +13,7 @@ module Rakismet
   Undefined = Class.new(NameError)
 
   class << self
-    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers
+    attr_accessor :key, :url, :host, :proxy_host, :proxy_port, :test, :excluded_headers, :blog_url
     
     def excluded_headers
       @excluded_headers || ['HTTP_COOKIE']
@@ -55,7 +55,7 @@ module Rakismet
       validate_config
       akismet = URI.parse(verify_url)
       response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
-        data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
+        data = "key=#{Rakismet.key}&blog=#{blog_url}"
         http.post(akismet.path, data, Rakismet.headers)
       end
       @valid_key = (response.body == 'valid')
@@ -67,7 +67,7 @@ module Rakismet
 
     def akismet_call(function, args={})
       validate_config
-      args.merge!(:blog => Rakismet.url, :is_test => Rakismet.test_mode)
+      args.merge!(:blog => blog_url, :is_test => Rakismet.test_mode)
       akismet = URI.parse(call_url(function))
       response = Net::HTTP.start(akismet.host, use_ssl: true, p_addr: proxy_host, p_port: proxy_port) do |http|
         params = args.map do |k,v|
